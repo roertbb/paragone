@@ -1,0 +1,8 @@
+generates:
+  graphql/generated-types.ts:
+    schema: graphql/schema.graphql
+    overwrite: true
+    plugins:
+      - typescript
+    config:
+      useIndexSignature: true
