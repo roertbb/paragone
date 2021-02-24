@@ -1,21 +1,25 @@
 import * as cdk from "@aws-cdk/core";
 import * as s3 from "@aws-cdk/aws-s3";
-// import * as ddb from "@aws-cdk/aws-dynamodb";
+import * as ddb from "@aws-cdk/aws-dynamodb";
 import * as lambda from "@aws-cdk/aws-lambda";
 import * as iam from "@aws-cdk/aws-iam";
 import * as sns from "@aws-cdk/aws-sns";
 import {
-  // DynamoEventSource,
   S3EventSource,
   SnsEventSource,
 } from "@aws-cdk/aws-lambda-event-sources";
 
 type Props = {
   receiptBucket: s3.Bucket;
+  receiptTable: ddb.Table;
 };
 
 export class ReceiptProcessor extends cdk.Construct {
-  constructor(scope: cdk.Construct, id: string, { receiptBucket }: Props) {
+  constructor(
+    scope: cdk.Construct,
+    id: string,
+    { receiptBucket, receiptTable }: Props
+  ) {
     super(scope, id);
 
     const snsReceiptProcessedTopic = new sns.Topic(
@@ -76,6 +80,7 @@ export class ReceiptProcessor extends cdk.Construct {
         environment: {
           SNS_TOPIC_ARN: snsReceiptProcessedTopic.topicArn,
           SNS_ROLE_ARN: textractServiceRole.roleArn,
+          TABLE_NAME: receiptTable.tableName,
         },
         memorySize: 1024,
       }
@@ -85,5 +90,6 @@ export class ReceiptProcessor extends cdk.Construct {
       new SnsEventSource(snsReceiptProcessedTopic)
     );
     sendTextractResultToDynamo.addToRolePolicy(policyStatement);
+    receiptTable.grantWriteData(sendTextractResultToDynamo);
   }
 }

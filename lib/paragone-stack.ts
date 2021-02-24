@@ -3,6 +3,7 @@ import * as s3 from "@aws-cdk/aws-s3";
 import * as cognito from "@aws-cdk/aws-cognito";
 import * as appsync from "@aws-cdk/aws-appsync";
 import * as lambda from "@aws-cdk/aws-lambda";
+import * as ddb from "@aws-cdk/aws-dynamodb";
 import { ReceiptProcessor } from "./receiptProcessor";
 
 export class ParagoneStack extends cdk.Stack {
@@ -21,7 +22,18 @@ export class ParagoneStack extends cdk.Stack {
       ],
     });
 
-    new ReceiptProcessor(this, "receiptProcessor", { receiptBucket });
+    const receiptTable = new ddb.Table(this, "receiptTable", {
+      billingMode: ddb.BillingMode.PAY_PER_REQUEST,
+      partitionKey: {
+        name: "id",
+        type: ddb.AttributeType.STRING,
+      },
+    });
+
+    new ReceiptProcessor(this, "receiptProcessor", {
+      receiptBucket,
+      receiptTable,
+    });
 
     const userPool = new cognito.UserPool(this, "paragoneUserPool", {
       selfSignUpEnabled: true,

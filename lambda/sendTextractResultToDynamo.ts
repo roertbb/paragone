@@ -1,12 +1,14 @@
-import * as AWS from "aws-sdk";
+import { DynamoDB, Textract } from "aws-sdk";
 import { SNSEvent } from "aws-lambda";
 
-const textract = new AWS.Textract({ region: "eu-central-1" });
+const textract = new Textract({ region: "eu-central-1" });
+const TableName = process.env.TABLE_NAME!;
+const db = new DynamoDB.DocumentClient();
 
 const priceRegex = /\d+([.,]\d{1,2})?/g;
 const currency = "PLN";
 
-function extractPrice(data: AWS.Textract.GetDocumentAnalysisResponse) {
+function extractPrice(data: Textract.GetDocumentAnalysisResponse) {
   const lines = data.Blocks?.filter(({ BlockType }) => BlockType === "LINE");
   const linesWithCurrency = lines?.filter(({ Text }) =>
     Text?.includes(currency)
@@ -21,16 +23,19 @@ function extractPrice(data: AWS.Textract.GetDocumentAnalysisResponse) {
 export const handler = async (event: SNSEvent) => {
   const { Message } = event.Records[0].Sns;
 
-  let JobId;
+  let JobId: string;
+  let S3ObjectName: string;
+
   try {
     const msg = JSON.parse(Message);
-    JobId = msg["JobId"];
+    JobId = msg.JobId;
+    S3ObjectName = msg.DocumentLocation.S3ObjectName;
   } catch (error) {
     console.log(error);
     return;
   }
 
-  const params: AWS.Textract.GetDocumentAnalysisRequest = {
+  const params: Textract.GetDocumentAnalysisRequest = {
     JobId,
   };
 
@@ -40,8 +45,12 @@ export const handler = async (event: SNSEvent) => {
     .then((data) => {
       const price = extractPrice(data);
 
-      // save to dynamodb
-      console.log(price);
+      const Item = {
+        id: S3ObjectName,
+        price,
+      };
+
+      return db.put({ Item, TableName }).promise();
     })
     .catch(({ error }) => console.log(error));
 };

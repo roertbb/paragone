@@ -25,5 +25,4 @@ export const handler = async (event: S3CreateEvent) => {
   };
 
   await textract.startDocumentAnalysis(params).promise();
-  // .then(data => {data.JobId})
 };

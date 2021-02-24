@@ -3,8 +3,8 @@ import { AppSyncResolverHandler } from "aws-lambda";
 import { uuid } from "uuidv4";
 import * as t from "../graphql/generated-types";
 
-export const BucketName = process.env.BUCKET_NAME!;
-export const s3 = new S3();
+const BucketName = process.env.BUCKET_NAME!;
+const s3 = new S3();
 const URL_EXPIRATION_SECONDS = 300;
 
 export const handler: AppSyncResolverHandler<
@@ -12,7 +12,7 @@ export const handler: AppSyncResolverHandler<
   t.Query["getUploadUrl"]
 > = async (event) => {
   const username = event.identity?.username;
-  const filename = `${username}${uuid()}.jpg`;
+  const filename = `${username}-${uuid()}.jpg`;
 
   const s3Params = {
     Bucket: BucketName,
