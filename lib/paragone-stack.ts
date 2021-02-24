@@ -1,10 +1,9 @@
 import * as cdk from "@aws-cdk/core";
 import * as s3 from "@aws-cdk/aws-s3";
 import * as cognito from "@aws-cdk/aws-cognito";
-import * as appsync from "@aws-cdk/aws-appsync";
-import * as lambda from "@aws-cdk/aws-lambda";
 import * as ddb from "@aws-cdk/aws-dynamodb";
 import { ReceiptProcessor } from "./receiptProcessor";
+import { ReceiptApi } from "./receiptApi";
 
 export class ParagoneStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
@@ -28,11 +27,6 @@ export class ParagoneStack extends cdk.Stack {
         name: "id",
         type: ddb.AttributeType.STRING,
       },
-    });
-
-    new ReceiptProcessor(this, "receiptProcessor", {
-      receiptBucket,
-      receiptTable,
     });
 
     const userPool = new cognito.UserPool(this, "paragoneUserPool", {
@@ -60,38 +54,15 @@ export class ParagoneStack extends cdk.Stack {
       }
     );
 
-    const api = new appsync.GraphqlApi(this, "paragoneApp", {
-      name: "paragoneApi",
-      logConfig: {
-        fieldLogLevel: appsync.FieldLogLevel.ALL,
-      },
-      schema: appsync.Schema.fromAsset("./graphql/schema.graphql"),
-      authorizationConfig: {
-        defaultAuthorization: {
-          authorizationType: appsync.AuthorizationType.USER_POOL,
-          userPoolConfig: {
-            userPool,
-          },
-        },
-      },
+    new ReceiptProcessor(this, "receiptProcessor", {
+      receiptBucket,
+      receiptTable,
     });
 
-    const getUploadUrlHandler = new lambda.Function(
-      this,
-      "getUploadUrlHandler",
-      {
-        runtime: lambda.Runtime.NODEJS_12_X,
-        handler: `index.getUploadUrlHandler`,
-        code: lambda.Code.fromAsset("lambda"),
-        environment: {
-          BUCKET_NAME: receiptBucket.bucketName,
-        },
-      }
-    );
-
-    receiptBucket.grantPut(getUploadUrlHandler);
-    api
-      .addLambdaDataSource("getUploadUrlDataSource", getUploadUrlHandler)
-      .createResolver({ typeName: "Query", fieldName: "getUploadUrl" });
+    new ReceiptApi(this, "receiptApi", {
+      receiptBucket,
+      receiptTable,
+      userPool,
+    });
   }
 }
