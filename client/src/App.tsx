@@ -5,6 +5,7 @@ import Register from "./auth/Register";
 import ReceiptUploader from "./components/ReceiptUploader";
 import WithApollo from "./WithApollo";
 import { getUserSession } from "./auth/UserPool";
+import ReceiptList from "./components/ReceiptList";
 
 function App() {
   const userSession = getUserSession();
@@ -18,6 +19,9 @@ function App() {
             <Link to="/">Home</Link>
           </li>
           <li>
+            <Link to="/upload">Upload</Link>
+          </li>
+          <li>
             <Link to="/login">Login</Link>
           </li>
           <li>
@@ -29,17 +33,12 @@ function App() {
         <Route path="/login">
           <Login onLogin={() => setIsLoggedIn(true)} />
         </Route>
-        <Route path="/register">
-          <Register />
-        </Route>
+        <Route path="/register" component={Register} />
         {isLoggedIn && (
-          <>
-            <Route path="/">
-              <WithApollo>
-                <ReceiptUploader />
-              </WithApollo>
-            </Route>
-          </>
+          <WithApollo>
+            <Route path="/upload" component={ReceiptUploader} />
+            <Route path="/" exact component={ReceiptList} />
+          </WithApollo>
         )}
       </Switch>
     </div>

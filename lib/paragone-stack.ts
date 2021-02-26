@@ -93,5 +93,9 @@ export class ParagoneStack extends cdk.Stack {
     new cdk.CfnOutput(this, "GraphQLAuthenticationType", {
       value: appsync.AuthorizationType.USER_POOL,
     });
+
+    new cdk.CfnOutput(this, "bucketWebsiteUrl", {
+      value: receiptBucket.bucketWebsiteUrl,
+    });
   }
 }

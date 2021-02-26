@@ -1,8 +1,12 @@
 import React, { useState } from "react";
 import { gql, useQuery } from "@apollo/client";
+import * as t from "../../../graphql/generated-types";
+interface getUploadUrlData {
+  getUploadUrl: t.Query["getUploadUrl"];
+}
 
 const getUploadUrlQuery = gql`
-  query test {
+  query {
     getUploadUrl
   }
 `;
@@ -13,17 +17,17 @@ function ReceiptUploader() {
     string | ArrayBuffer | null
   >(null);
 
-  const { loading, error, data } = useQuery(getUploadUrlQuery);
+  const { loading, error, data } = useQuery<getUploadUrlData>(
+    getUploadUrlQuery
+  );
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error...</p>;
 
-  const uploadUrl = data.getUploadUrl as string;
-
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    fetch(uploadUrl, {
+    fetch(data?.getUploadUrl!, {
       method: "PUT",
       body: file,
     })

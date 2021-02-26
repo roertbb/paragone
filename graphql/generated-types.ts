@@ -11,7 +11,14 @@ export type Scalars = {
   Float: number;
 };
 
+export type Receipt = {
+  __typename?: 'Receipt';
+  filename: Scalars['String'];
+  price?: Maybe<Scalars['Float']>;
+};
+
 export type Query = {
   __typename?: 'Query';
   getUploadUrl?: Maybe<Scalars['String']>;
+  receipts?: Maybe<Array<Maybe<Receipt>>>;
 };

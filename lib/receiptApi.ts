@@ -1,3 +1,4 @@
+import { TableName } from "./../lambda/receipts";
 import * as cdk from "@aws-cdk/core";
 import * as s3 from "@aws-cdk/aws-s3";
 import * as cognito from "@aws-cdk/aws-cognito";
@@ -17,7 +18,7 @@ export class ReceiptApi extends cdk.Construct {
   constructor(
     scope: cdk.Construct,
     id: string,
-    { receiptBucket, userPool }: Props
+    { receiptBucket, receiptTable, userPool }: Props
   ) {
     super(scope, id);
 
@@ -54,5 +55,19 @@ export class ReceiptApi extends cdk.Construct {
     this.api
       .addLambdaDataSource("getUploadUrlDataSource", getUploadUrlHandler)
       .createResolver({ typeName: "Query", fieldName: "getUploadUrl" });
+
+    const getReceiptsHandler = new lambda.Function(this, "getReceiptsHandler", {
+      runtime: lambda.Runtime.NODEJS_12_X,
+      handler: `index.getReceiptsHandler`,
+      code: lambda.Code.fromAsset("lambda"),
+      environment: {
+        TABLE_NAME: receiptTable.tableName,
+      },
+    });
+
+    receiptTable.grant(getReceiptsHandler, "dynamodb:Query");
+    this.api
+      .addLambdaDataSource("receiptsDataSource", getReceiptsHandler)
+      .createResolver({ typeName: "Query", fieldName: "receipts" });
   }
 }
