@@ -12,6 +12,8 @@ type Props = {
 };
 
 export class ReceiptApi extends cdk.Construct {
+  api: appsync.GraphqlApi;
+
   constructor(
     scope: cdk.Construct,
     id: string,
@@ -19,7 +21,7 @@ export class ReceiptApi extends cdk.Construct {
   ) {
     super(scope, id);
 
-    const api = new appsync.GraphqlApi(this, "paragoneApp", {
+    this.api = new appsync.GraphqlApi(this, "paragoneApp", {
       name: "paragoneApi",
       logConfig: {
         fieldLogLevel: appsync.FieldLogLevel.ALL,
@@ -49,7 +51,7 @@ export class ReceiptApi extends cdk.Construct {
     );
 
     receiptBucket.grantPut(getUploadUrlHandler);
-    api
+    this.api
       .addLambdaDataSource("getUploadUrlDataSource", getUploadUrlHandler)
       .createResolver({ typeName: "Query", fieldName: "getUploadUrl" });
   }

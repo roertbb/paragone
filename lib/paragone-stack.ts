@@ -2,6 +2,7 @@ import * as cdk from "@aws-cdk/core";
 import * as s3 from "@aws-cdk/aws-s3";
 import * as cognito from "@aws-cdk/aws-cognito";
 import * as ddb from "@aws-cdk/aws-dynamodb";
+import * as appsync from "@aws-cdk/aws-appsync";
 import { ReceiptProcessor } from "./receiptProcessor";
 import { ReceiptApi } from "./receiptApi";
 
@@ -59,10 +60,34 @@ export class ParagoneStack extends cdk.Stack {
       receiptTable,
     });
 
-    new ReceiptApi(this, "receiptApi", {
+    const { api } = new ReceiptApi(this, "receiptApi", {
       receiptBucket,
       receiptTable,
       userPool,
+    });
+
+    new cdk.CfnOutput(this, "Region", {
+      value: this.region,
+    });
+
+    new cdk.CfnOutput(this, "UserPoolId", {
+      value: userPool.userPoolId,
+    });
+
+    new cdk.CfnOutput(this, "ClientId", {
+      value: userPoolClient.userPoolClientId,
+    });
+
+    new cdk.CfnOutput(this, "GraphQLEndpoint", {
+      value: api.graphqlUrl,
+    });
+
+    new cdk.CfnOutput(this, "GraphQLAPIKey", {
+      value: api.apiKey || "",
+    });
+
+    new cdk.CfnOutput(this, "GraphQLAuthenticationType", {
+      value: appsync.AuthorizationType.USER_POOL,
     });
   }
 }
