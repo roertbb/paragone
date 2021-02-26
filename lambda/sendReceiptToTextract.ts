@@ -1,7 +1,9 @@
-import * as AWS from "aws-sdk";
+import { Textract, DynamoDB } from "aws-sdk";
 import { S3CreateEvent } from "aws-lambda";
 
-const textract = new AWS.Textract();
+const TableName = process.env.TABLE_NAME!;
+const textract = new Textract();
+const db = new DynamoDB.DocumentClient();
 
 const S3_BUCKET_NAME = process.env.S3_BUCKET_NAME || "";
 const SNS_TOPIC_ARN = process.env.SNS_TOPIC_ARN || "";
@@ -9,8 +11,9 @@ const SNS_ROLE_ARN = process.env.SNS_ROLE_ARN || "";
 
 export const handler = async (event: S3CreateEvent) => {
   const filename = event.Records[0].s3.object.key;
+  const username = filename.split("_")[0];
 
-  const params: AWS.Textract.StartDocumentAnalysisRequest = {
+  const params: Textract.StartDocumentAnalysisRequest = {
     DocumentLocation: {
       S3Object: {
         Bucket: S3_BUCKET_NAME,
@@ -24,5 +27,17 @@ export const handler = async (event: S3CreateEvent) => {
     },
   };
 
-  await textract.startDocumentAnalysis(params).promise();
+  const Item = {
+    username,
+    filename,
+  };
+
+  try {
+    await Promise.all([
+      db.put({ TableName, Item }).promise(),
+      textract.startDocumentAnalysis(params).promise(),
+    ]);
+  } catch (error) {
+    console.error({ error });
+  }
 };

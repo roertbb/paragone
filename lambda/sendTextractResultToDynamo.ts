@@ -24,33 +24,39 @@ export const handler = async (event: SNSEvent) => {
   const { Message } = event.Records[0].Sns;
 
   let JobId: string;
-  let S3ObjectName: string;
+  let filename: string;
 
   try {
     const msg = JSON.parse(Message);
     JobId = msg.JobId;
-    S3ObjectName = msg.DocumentLocation.S3ObjectName;
+    filename = msg.DocumentLocation.S3ObjectName;
   } catch (error) {
     console.log(error);
     return;
   }
 
-  const params: Textract.GetDocumentAnalysisRequest = {
-    JobId,
-  };
+  const params: Textract.GetDocumentAnalysisRequest = { JobId };
 
-  await textract
-    .getDocumentAnalysis(params)
-    .promise()
-    .then((data) => {
-      const price = extractPrice(data);
+  try {
+    const data = await textract.getDocumentAnalysis(params).promise();
 
-      const Item = {
-        id: S3ObjectName,
-        price,
-      };
+    const price = extractPrice(data);
+    const username = filename.split("_")[0];
 
-      return db.put({ Item, TableName }).promise();
-    })
-    .catch(({ error }) => console.log(error));
+    await db
+      .update({
+        TableName,
+        Key: {
+          filename,
+          username,
+        },
+        UpdateExpression: "set price = :p",
+        ExpressionAttributeValues: {
+          ":p": price,
+        },
+      })
+      .promise();
+  } catch (error) {
+    console.log({ error });
+  }
 };

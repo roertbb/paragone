@@ -25,7 +25,11 @@ export class ParagoneStack extends cdk.Stack {
     const receiptTable = new ddb.Table(this, "receiptTable", {
       billingMode: ddb.BillingMode.PAY_PER_REQUEST,
       partitionKey: {
-        name: "id",
+        name: "username",
+        type: ddb.AttributeType.STRING,
+      },
+      sortKey: {
+        name: "filename",
         type: ddb.AttributeType.STRING,
       },
     });

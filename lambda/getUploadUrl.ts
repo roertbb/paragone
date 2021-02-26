@@ -12,7 +12,7 @@ export const handler: AppSyncResolverHandler<
   t.Query["getUploadUrl"]
 > = async (event) => {
   const username = event.identity?.username;
-  const filename = `${username}-${uuid()}.jpg`;
+  const filename = `${username}_${uuid()}.jpg`;
 
   const s3Params = {
     Bucket: BucketName,

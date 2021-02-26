@@ -47,6 +47,7 @@ export class ReceiptProcessor extends cdk.Construct {
         runtime: lambda.Runtime.NODEJS_12_X,
         environment: {
           S3_BUCKET_NAME: receiptBucket.bucketName,
+          TABLE_NAME: receiptTable.tableName,
           SNS_TOPIC_ARN: snsReceiptProcessedTopic.topicArn,
           SNS_ROLE_ARN: textractServiceRole.roleArn,
         },
@@ -69,6 +70,7 @@ export class ReceiptProcessor extends cdk.Construct {
 
     snsReceiptProcessedTopic.grantPublish(sendReceiptToTextract);
     receiptBucket.grantReadWrite(sendReceiptToTextract);
+    receiptTable.grantWriteData(sendReceiptToTextract);
 
     const sendTextractResultToDynamo = new lambda.Function(
       this,

@@ -3,7 +3,6 @@ import { Switch, Route, Link } from "react-router-dom";
 import Login from "./auth/Login";
 import Register from "./auth/Register";
 import ReceiptUploader from "./components/ReceiptUploader";
-import Test from "./components/ApolloTest";
 import WithApollo from "./WithApollo";
 import { getUserSession } from "./auth/UserPool";
 
@@ -38,7 +37,6 @@ function App() {
             <Route path="/">
               <WithApollo>
                 <ReceiptUploader />
-                <Test />
               </WithApollo>
             </Route>
           </>

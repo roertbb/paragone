@@ -1,4 +1,11 @@
 import React, { useState } from "react";
+import { gql, useQuery } from "@apollo/client";
+
+const getUploadUrlQuery = gql`
+  query test {
+    getUploadUrl
+  }
+`;
 
 function ReceiptUploader() {
   const [file, setFile] = useState<File | undefined>(undefined);
@@ -6,10 +13,15 @@ function ReceiptUploader() {
     string | ArrayBuffer | null
   >(null);
 
+  const { loading, error, data } = useQuery(getUploadUrlQuery);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error...</p>;
+
+  const uploadUrl = data.getUploadUrl as string;
+
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-
-    const uploadUrl = "tmp";
 
     fetch(uploadUrl, {
       method: "PUT",
@@ -46,7 +58,7 @@ function ReceiptUploader() {
             <img src={imagePreviewUrl.toString()} alt="receipt" />
           )}
         </div>
-        <button type="submit">upload</button>
+        <button type="submit">Upload</button>
       </form>
     </div>
   );
