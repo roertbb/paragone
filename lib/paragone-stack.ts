@@ -32,6 +32,8 @@ export class ParagoneStack extends cdk.Stack {
         name: "filename",
         type: ddb.AttributeType.STRING,
       },
+      stream: ddb.StreamViewType.NEW_IMAGE,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
     const userPool = new cognito.UserPool(this, "paragoneUserPool", {
@@ -59,15 +61,15 @@ export class ParagoneStack extends cdk.Stack {
       }
     );
 
-    new ReceiptProcessor(this, "receiptProcessor", {
-      receiptBucket,
-      receiptTable,
-    });
-
     const { api } = new ReceiptApi(this, "receiptApi", {
       receiptBucket,
       receiptTable,
       userPool,
+    });
+
+    new ReceiptProcessor(this, "receiptProcessor", {
+      receiptBucket,
+      receiptTable,
     });
 
     new cdk.CfnOutput(this, "Region", {

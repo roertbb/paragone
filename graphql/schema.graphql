@@ -1,4 +1,5 @@
-type Receipt @aws_cognito_user_pools {
+type Receipt {
+  username: String!
   filename: String!
   price: Float
 }
@@ -6,4 +7,15 @@ type Receipt @aws_cognito_user_pools {
 type Query {
   getUploadUrl: String @aws_cognito_user_pools
   receipts: [Receipt] @aws_cognito_user_pools
+}
+
+type Mutation {
+  receiptProcessed(username: String!, filename: String!, price: Float): Receipt
+    @aws_api_key
+}
+
+type Subscription {
+  onReceiptProcessed(username: String!): Receipt
+    @aws_subscribe(mutations: ["receiptProcessed"])
+    @aws_cognito_user_pools
 }

@@ -13,6 +13,7 @@ export type Scalars = {
 
 export type Receipt = {
   __typename?: 'Receipt';
+  username: Scalars['String'];
   filename: Scalars['String'];
   price?: Maybe<Scalars['Float']>;
 };
@@ -21,4 +22,26 @@ export type Query = {
   __typename?: 'Query';
   getUploadUrl?: Maybe<Scalars['String']>;
   receipts?: Maybe<Array<Maybe<Receipt>>>;
+};
+
+export type Mutation = {
+  __typename?: 'Mutation';
+  receiptProcessed?: Maybe<Receipt>;
+};
+
+
+export type MutationReceiptProcessedArgs = {
+  username: Scalars['String'];
+  filename: Scalars['String'];
+  price?: Maybe<Scalars['Float']>;
+};
+
+export type Subscription = {
+  __typename?: 'Subscription';
+  onReceiptProcessed?: Maybe<Receipt>;
+};
+
+
+export type SubscriptionOnReceiptProcessedArgs = {
+  username: Scalars['String'];
 };
