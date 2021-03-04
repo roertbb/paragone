@@ -30,4 +30,8 @@ export function getUserSession() {
   return UserPool.getCurrentUser();
 }
 
+export function getUsername() {
+  return UserPool.getCurrentUser()?.getUsername();
+}
+
 export { CognitoUserAttribute };

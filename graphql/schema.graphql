@@ -1,4 +1,4 @@
-type Receipt {
+type Receipt @aws_cognito_user_pools @aws_api_key {
   username: String!
   filename: String!
   price: Float
