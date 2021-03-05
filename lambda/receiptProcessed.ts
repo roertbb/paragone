@@ -30,7 +30,7 @@ async function notifyReceiptProcessed({
     variables: {
       username: data?.username.S,
       filename: data?.filename.S,
-      price: Number(data?.price.N),
+      price: Number(data?.price?.N),
     },
   };
 
@@ -54,7 +54,7 @@ export const handler = async (event: DynamoDBStreamEvent) => {
   }
 
   for (const record of event.Records) {
-    if (record.eventName === "INSERT") {
+    if (["INSERT", "MODIFY"].includes(record.eventName || "")) {
       const data = record.dynamodb?.NewImage;
 
       await notifyReceiptProcessed({ data });

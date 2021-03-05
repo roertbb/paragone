@@ -44,7 +44,14 @@ function ReceiptList() {
         const newReceipt = subscriptionData.data.onReceiptProcessed;
 
         return {
-          receipts: [...(prev.receipts || []), newReceipt],
+          receipts: [
+            ...(prev.receipts || []).filter(
+              (receipt) =>
+                receipt?.filename !==
+                subscriptionData.data.onReceiptProcessed?.filename
+            ),
+            newReceipt,
+          ],
         } as receiptsData;
       },
     });
@@ -54,17 +61,20 @@ function ReceiptList() {
   if (error) return <p>Error...</p>;
 
   return (
-    <ul>
-      {data?.receipts?.map((receipt) => {
-        const { filename, price } = receipt!;
+    <>
+      <p>receipts:</p>
+      <ul>
+        {data?.receipts?.map((receipt) => {
+          const { filename, price } = receipt!;
 
-        return (
-          <li key={filename}>
-            {filename} - {price}
-          </li>
-        );
-      })}
-    </ul>
+          return (
+            <li key={filename}>
+              {filename} - {price}
+            </li>
+          );
+        })}
+      </ul>
+    </>
   );
 }
 

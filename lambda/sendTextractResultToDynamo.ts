@@ -40,7 +40,7 @@ export const handler = async (event: SNSEvent) => {
   try {
     const data = await textract.getDocumentAnalysis(params).promise();
 
-    const price = extractPrice(data);
+    const price = Number(extractPrice(data));
     const username = filename.split("_")[0];
 
     await db

@@ -60,11 +60,11 @@ interface Props {
   children: React.ReactNode;
 }
 
-const WithApollo = ({ children }: Props) => {
+const Apollo = ({ children }: Props) => {
   const auth = getAuth();
   const client = createClient(auth);
 
   return <ApolloProvider client={client}>{children}</ApolloProvider>;
 };
 
-export default WithApollo;
+export default Apollo;

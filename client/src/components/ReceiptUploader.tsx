@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { gql, useQuery } from "@apollo/client";
 import * as t from "../../../graphql/generated-types";
+import { useHistory } from "react-router";
 interface getUploadUrlData {
   getUploadUrl: t.Query["getUploadUrl"];
 }
@@ -16,6 +17,8 @@ function ReceiptUploader() {
   const [imagePreviewUrl, setImagePreviewUrl] = useState<
     string | ArrayBuffer | null
   >(null);
+
+  const history = useHistory();
 
   const { loading, error, data } = useQuery<getUploadUrlData>(
     getUploadUrlQuery
@@ -34,6 +37,7 @@ function ReceiptUploader() {
       .then((res) => {
         if (res.ok) {
           console.log("success");
+          history.push("/");
         }
       })
       .catch((error) => console.log({ error }));

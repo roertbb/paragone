@@ -2,7 +2,6 @@ import * as cdk from "@aws-cdk/core";
 import * as s3 from "@aws-cdk/aws-s3";
 import * as cognito from "@aws-cdk/aws-cognito";
 import * as ddb from "@aws-cdk/aws-dynamodb";
-import * as appsync from "@aws-cdk/aws-appsync";
 import { ReceiptProcessor } from "./receiptProcessor";
 import { ReceiptApi } from "./receiptApi";
 
@@ -90,10 +89,6 @@ export class ParagoneStack extends cdk.Stack {
 
     new cdk.CfnOutput(this, "GraphQLAPIKey", {
       value: api.apiKey || "",
-    });
-
-    new cdk.CfnOutput(this, "GraphQLAuthenticationType", {
-      value: appsync.AuthorizationType.USER_POOL,
     });
 
     new cdk.CfnOutput(this, "bucketWebsiteUrl", {
