@@ -23,11 +23,9 @@ const Nav = (props: Props) => {
         </NavLink>
         <Box ml={"auto"}>
           {currentUser ? (
-            <>
-              <NavLink to="/login">
-                <Link mr={2}>Logout</Link>
-              </NavLink>
-            </>
+            <NavLink to="/login">
+              <Link mr={2}>Logout</Link>
+            </NavLink>
           ) : (
             <>
               <NavLink to="/login">

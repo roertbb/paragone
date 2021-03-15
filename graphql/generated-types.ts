@@ -13,15 +13,21 @@ export type Scalars = {
 
 export type Receipt = {
   __typename?: 'Receipt';
+  id: Scalars['String'];
   username: Scalars['String'];
-  filename: Scalars['String'];
   price?: Maybe<Scalars['Float']>;
 };
 
 export type Query = {
   __typename?: 'Query';
   getUploadUrl?: Maybe<Scalars['String']>;
+  getDownloadUrl?: Maybe<Scalars['String']>;
   receipts?: Maybe<Array<Maybe<Receipt>>>;
+};
+
+
+export type QueryGetDownloadUrlArgs = {
+  id: Scalars['String'];
 };
 
 export type Mutation = {
@@ -32,7 +38,7 @@ export type Mutation = {
 
 export type MutationReceiptProcessedArgs = {
   username: Scalars['String'];
-  filename: Scalars['String'];
+  id: Scalars['String'];
   price?: Maybe<Scalars['Float']>;
 };
 

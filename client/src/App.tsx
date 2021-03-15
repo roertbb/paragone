@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Switch, Route } from "react-router-dom";
+import { Switch, Route, useHistory } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ReceiptUploader from "./components/ReceiptUploader";
@@ -11,6 +11,12 @@ import Layout from "./components/Layout";
 function App() {
   const userSession = getUserSession();
   const [isLoggedIn, setIsLoggedIn] = useState(!!userSession);
+
+  const history = useHistory();
+
+  if (!isLoggedIn) {
+    history.replace("/login");
+  }
 
   return (
     <Layout>

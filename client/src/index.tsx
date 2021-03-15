@@ -4,6 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import { CSSReset, ThemeProvider } from "@chakra-ui/core";
 import theme from "./theme";
 import App from "./App";
+import "./index.css";
 
 ReactDOM.render(
   <React.StrictMode>

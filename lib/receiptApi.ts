@@ -62,6 +62,26 @@ export class ReceiptApi extends cdk.Construct {
       .addLambdaDataSource("getUploadUrlDataSource", getUploadUrlHandler)
       .createResolver({ typeName: "Query", fieldName: "getUploadUrl" });
 
+    // Query getDownloadUrlHandler
+    const getDownloadUrlHandler = new lambda.Function(
+      this,
+      "getDownloadUrlHandler",
+      {
+        runtime: lambda.Runtime.NODEJS_12_X,
+        handler: `index.getDownloadUrlHandler`,
+        code: lambda.Code.fromAsset("lambda"),
+        environment: {
+          BUCKET_NAME: receiptBucket.bucketName,
+        },
+        memorySize: 1024,
+      }
+    );
+
+    receiptBucket.grantRead(getDownloadUrlHandler);
+    this.api
+      .addLambdaDataSource("getDownloadUrlDataSource", getDownloadUrlHandler)
+      .createResolver({ typeName: "Query", fieldName: "getDownloadUrl" });
+
     // Query receipts
     const getReceiptsHandler = new lambda.Function(this, "getReceiptsHandler", {
       runtime: lambda.Runtime.NODEJS_12_X,
@@ -107,7 +127,7 @@ export class ReceiptApi extends cdk.Construct {
         {
           "version": "2017-02-28",
           "payload": {
-            "filename": "\${ctx.arguments.filename}",
+            "id": "\${ctx.arguments.id}",
             "price": "\${ctx.arguments.price}",
             "username": "\${ctx.arguments.username}",
           }

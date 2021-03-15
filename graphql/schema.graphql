@@ -1,16 +1,17 @@
 type Receipt @aws_cognito_user_pools @aws_api_key {
+  id: String!
   username: String!
-  filename: String!
   price: Float
 }
 
 type Query {
   getUploadUrl: String @aws_cognito_user_pools
+  getDownloadUrl(id: String!): String @aws_cognito_user_pools
   receipts: [Receipt] @aws_cognito_user_pools
 }
 
 type Mutation {
-  receiptProcessed(username: String!, filename: String!, price: Float): Receipt
+  receiptProcessed(username: String!, id: String!, price: Float): Receipt
     @aws_api_key
 }
 

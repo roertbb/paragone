@@ -14,7 +14,7 @@ function Login({ onLogin }: Props) {
   const history = useHistory();
 
   return (
-    <Wrapper size="small">
+    <Wrapper size="small" flex>
       <Formik
         initialValues={{ username: "", password: "" }}
         onSubmit={async (values, { setErrors }) => {

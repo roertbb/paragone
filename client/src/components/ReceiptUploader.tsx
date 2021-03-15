@@ -1,7 +1,12 @@
-import React, { useState } from "react";
+import { Button } from "@chakra-ui/core";
+import React, { useRef, useState } from "react";
 import { gql, useQuery } from "@apollo/client";
 import * as t from "../../../graphql/generated-types";
 import { useHistory } from "react-router";
+import Wrapper from "./Wrapper";
+import Spinner from "../components/Spinner";
+import UnexpectedError from "../components/UnexpectedError";
+
 interface getUploadUrlData {
   getUploadUrl: t.Query["getUploadUrl"];
 }
@@ -19,13 +24,11 @@ function ReceiptUploader() {
   >(null);
 
   const history = useHistory();
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   const { loading, error, data } = useQuery<getUploadUrlData>(
     getUploadUrlQuery
   );
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error...</p>;
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -57,18 +60,41 @@ function ReceiptUploader() {
     reader.readAsDataURL(file!);
   }
 
+  if (loading) return <Spinner />;
+  if (error) return <UnexpectedError />;
+
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <input className="fileInput" type="file" onChange={handleChange} />
-        <div>
-          {imagePreviewUrl && (
-            <img src={imagePreviewUrl.toString()} alt="receipt" />
-          )}
-        </div>
-        <button type="submit">Upload</button>
-      </form>
-    </div>
+    <Wrapper size="small" flex>
+      <input
+        type="file"
+        onChange={handleChange}
+        ref={inputRef}
+        style={{ display: "none" }}
+      ></input>
+      <Button
+        onClick={() => inputRef?.current?.click()}
+        variantColor="teal"
+        mb={8}
+        w="100%"
+      >
+        Select receipt to upload
+      </Button>
+
+      {imagePreviewUrl && (
+        <>
+          <img src={imagePreviewUrl.toString()} alt="receipt" />
+          <Button
+            type="submit"
+            variantColor="teal"
+            w="100%"
+            mt={8}
+            onClick={handleSubmit}
+          >
+            Upload receipt
+          </Button>
+        </>
+      )}
+    </Wrapper>
   );
 }
 

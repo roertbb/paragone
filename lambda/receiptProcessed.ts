@@ -7,13 +7,13 @@ const GRAPHQL_URL = process.env.GRAPHQL_URL || "";
 
 const receiptProcessedMutation = `
   mutation ReceiptProcessed(
-    $filename: String!
-    $price: Float
+    $id: String!
     $username: String!
+    $price: Float
   ) {
-    receiptProcessed(username: $username, filename: $filename, price: $price) {
+    receiptProcessed(id: $id, username: $username, price: $price) {
+      id,
       username,
-      filename,
       price
     }
   }
@@ -28,14 +28,16 @@ async function notifyReceiptProcessed({
     query: receiptProcessedMutation,
     operationName: "ReceiptProcessed",
     variables: {
+      id: data?.id.S,
       username: data?.username.S,
-      filename: data?.filename.S,
       price: Number(data?.price?.N),
     },
   };
 
+  console.log(JSON.stringify({ mutation, data }, null, 2));
+
   try {
-    await fetch(GRAPHQL_URL, {
+    const res = await fetch(GRAPHQL_URL, {
       method: "POST",
       body: JSON.stringify(mutation),
       headers: {
@@ -43,6 +45,8 @@ async function notifyReceiptProcessed({
         "x-api-key": API_KEY,
       },
     }).then((res: any) => res.json());
+
+    console.log(JSON.stringify({ res }, null, 2));
   } catch (error) {
     console.error(error, JSON.stringify(error));
   }

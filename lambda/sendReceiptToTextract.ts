@@ -11,7 +11,7 @@ const SNS_ROLE_ARN = process.env.SNS_ROLE_ARN || "";
 
 export const handler = async (event: S3CreateEvent) => {
   const filename = event.Records[0].s3.object.key;
-  const username = filename.split("_")[0];
+  const [username, id] = filename.split("/");
 
   const params: Textract.StartDocumentAnalysisRequest = {
     DocumentLocation: {
@@ -28,8 +28,8 @@ export const handler = async (event: S3CreateEvent) => {
   };
 
   const Item = {
+    id,
     username,
-    filename,
   };
 
   try {

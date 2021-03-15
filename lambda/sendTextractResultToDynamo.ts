@@ -40,19 +40,19 @@ export const handler = async (event: SNSEvent) => {
   try {
     const data = await textract.getDocumentAnalysis(params).promise();
 
-    const price = Number(extractPrice(data));
-    const username = filename.split("_")[0];
+    const price = extractPrice(data);
+    const [username, id] = filename.split("/");
 
     await db
       .update({
         TableName,
         Key: {
-          filename,
+          id,
           username,
         },
         UpdateExpression: "set price = :p",
         ExpressionAttributeValues: {
-          ":p": price,
+          ":p": price && Number(price),
         },
       })
       .promise();

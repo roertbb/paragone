@@ -28,7 +28,7 @@ export class ParagoneStack extends cdk.Stack {
         type: ddb.AttributeType.STRING,
       },
       sortKey: {
-        name: "filename",
+        name: "id",
         type: ddb.AttributeType.STRING,
       },
       stream: ddb.StreamViewType.NEW_IMAGE,

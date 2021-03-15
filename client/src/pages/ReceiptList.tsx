@@ -1,7 +1,12 @@
 import { gql, useQuery } from "@apollo/client";
+import { Box, Button, List, ListItem, Text } from "@chakra-ui/core";
 import { useEffect } from "react";
+import { Link } from "react-router-dom";
 import * as t from "../../../graphql/generated-types";
 import { getUsername } from "../auth/UserPool";
+import Spinner from "../components/Spinner";
+import UnexpectedError from "../components/UnexpectedError";
+import Wrapper from "../components/Wrapper";
 
 interface receiptsData {
   receipts: t.Query["receipts"];
@@ -10,7 +15,7 @@ interface receiptsData {
 const receiptsQuery = gql`
   query {
     receipts {
-      filename
+      id
       price
     }
   }
@@ -23,7 +28,7 @@ interface onReceiptProcessedData {
 const receiptsSubscription = gql`
   subscription onReceiptProcessed($username: String!) {
     onReceiptProcessed(username: $username) {
-      filename
+      id
       price
       username
     }
@@ -47,8 +52,7 @@ function ReceiptList() {
           receipts: [
             ...(prev.receipts || []).filter(
               (receipt) =>
-                receipt?.filename !==
-                subscriptionData.data.onReceiptProcessed?.filename
+                receipt?.id !== subscriptionData.data.onReceiptProcessed?.id
             ),
             newReceipt,
           ],
@@ -57,24 +61,57 @@ function ReceiptList() {
     });
   }, [subscribeToMore]);
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error...</p>;
+  if (loading) return <Spinner />;
+  if (error) return <UnexpectedError />;
 
   return (
-    <>
-      <p>receipts:</p>
-      <ul>
-        {data?.receipts?.map((receipt) => {
-          const { filename, price } = receipt!;
+    <Wrapper size="small" flex>
+      <Text textAlign="center" w="100%" mb={4}>
+        Scanned receipts
+      </Text>
 
-          return (
-            <li key={filename}>
-              {filename} - {price}
-            </li>
-          );
-        })}
-      </ul>
-    </>
+      <Box
+        flex={1}
+        mb={4}
+        bg="gray.50"
+        borderRadius="0.25rem"
+        borderWidth="1px"
+      >
+        <List styleType="none">
+          {data?.receipts?.map((receipt) => {
+            const { id, price } = receipt!;
+
+            return (
+              // TODO: extracto to another component
+              <ListItem>
+                <Box
+                  d="flex}"
+                  w="100%"
+                  p={4}
+                  borderRadius="0.25rem"
+                  borderBottomWidth="1px"
+                >
+                  <Text isTruncated flex={1}>
+                    {id}
+                  </Text>
+                  {price ? (
+                    <Text ml={4} color="teal.600">
+                      PLN {price}
+                    </Text>
+                  ) : undefined}
+                </Box>
+              </ListItem>
+            );
+          })}
+        </List>
+      </Box>
+
+      <Link to="/upload">
+        <Button variantColor="teal" w="100%">
+          Add receipt
+        </Button>
+      </Link>
+    </Wrapper>
   );
 }
 
