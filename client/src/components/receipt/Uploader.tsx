@@ -49,7 +49,7 @@ const ReceiptUploader = ({ onUploadSuccess }: Props) => {
             description:
               "It will show up in the listing once processing is completed",
             status: "success",
-            position: "bottom",
+            position: "top",
             isClosable: true,
           });
         }

@@ -10,11 +10,13 @@ const receiptProcessedMutation = `
     $id: String!
     $username: String!
     $price: Float
+    $createdAt: Long
   ) {
-    receiptProcessed(id: $id, username: $username, price: $price) {
+    receiptProcessed(id: $id, username: $username, price: $price, createdAt: $createdAt) {
       id,
       username,
-      price
+      price,
+      createdAt
     }
   }
 `;
@@ -31,6 +33,7 @@ async function notifyReceiptProcessed({
       id: data?.id.S,
       username: data?.username.S,
       price: Number(data?.price?.N),
+      createdAt: Number(data?.createdAt?.N),
     },
   };
 

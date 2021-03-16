@@ -35,11 +35,23 @@ export class ParagoneStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
+    receiptTable.addGlobalSecondaryIndex({
+      indexName: "receiptByUsername",
+      partitionKey: {
+        name: "username",
+        type: ddb.AttributeType.STRING,
+      },
+      sortKey: {
+        name: "createdAt",
+        type: ddb.AttributeType.NUMBER,
+      },
+    });
+
     const userPool = new cognito.UserPool(this, "paragoneUserPool", {
       selfSignUpEnabled: true,
-      accountRecovery: cognito.AccountRecovery.EMAIL_ONLY,
+      accountRecovery: cognito.AccountRecovery.PHONE_AND_EMAIL,
       userVerification: {
-        emailStyle: cognito.VerificationEmailStyle.LINK,
+        emailStyle: cognito.VerificationEmailStyle.CODE,
       },
       autoVerify: {
         email: true,

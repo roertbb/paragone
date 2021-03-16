@@ -30,6 +30,7 @@ export const handler = async (event: S3CreateEvent) => {
   const Item = {
     id,
     username,
+    createdAt: new Date().valueOf(),
   };
 
   try {

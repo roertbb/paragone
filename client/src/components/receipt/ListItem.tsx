@@ -7,7 +7,11 @@ interface Props {
 }
 
 const ListItem = ({ receipt, onReceiptSelected }: Props) => {
-  const { id, price } = receipt;
+  const { price, createdAt } = receipt;
+
+  const date = new Date(createdAt);
+  const day = date.toLocaleDateString();
+  const time = date.toLocaleTimeString();
 
   return (
     <ChakraListItem onClick={() => onReceiptSelected(receipt)}>
@@ -19,7 +23,7 @@ const ListItem = ({ receipt, onReceiptSelected }: Props) => {
         borderBottomWidth="1px"
       >
         <Text isTruncated flex={1}>
-          {id}
+          {day} - {time}
         </Text>
         {price ? (
           <Text ml={4} color="teal.600">

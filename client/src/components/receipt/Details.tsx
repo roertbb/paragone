@@ -21,7 +21,10 @@ interface Props {
   onClose: () => void;
 }
 
-const Details = ({ selectedReceipt: { id, price }, onClose }: Props) => {
+const Details = ({
+  selectedReceipt: { id, price, createdAt },
+  onClose,
+}: Props) => {
   const { loading, error, data } = useQuery<getDownloadUrlData>(
     getDownloadUrlQuery,
     { variables: { id } }
@@ -29,6 +32,10 @@ const Details = ({ selectedReceipt: { id, price }, onClose }: Props) => {
 
   if (loading) return <Spinner />;
   if (error) return <UnexpectedError />;
+
+  const date = new Date(createdAt);
+  const day = date.toLocaleDateString();
+  const time = date.toLocaleTimeString();
 
   return (
     <Wrapper flex>
@@ -39,12 +46,11 @@ const Details = ({ selectedReceipt: { id, price }, onClose }: Props) => {
         bg="gray.50"
         borderRadius="0.25rem"
       >
-        <Flex justifyContent="center">
+        <Flex justifyContent="center" p={4}>
           {data?.getDownloadUrl && (
             <img src={data?.getDownloadUrl} alt="receipt" />
           )}
         </Flex>
-
         <Flex p={4} flexDirection="column">
           <Flex
             flex={1}
@@ -52,8 +58,10 @@ const Details = ({ selectedReceipt: { id, price }, onClose }: Props) => {
             alignItems="baseline"
             justifyContent="space-between"
           >
-            <Text>Price:</Text>
-            <Text color="teal.600">PLN {price}</Text>
+            <Text>Uploaded:</Text>
+            <Text>
+              {day} - {time}
+            </Text>
           </Flex>
           <Flex flex={1} alignItems="baseline" justifyContent="space-between">
             <Text>Price:</Text>

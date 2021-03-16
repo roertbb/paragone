@@ -130,6 +130,7 @@ export class ReceiptApi extends cdk.Construct {
             "id": "\${ctx.arguments.id}",
             "price": "\${ctx.arguments.price}",
             "username": "\${ctx.arguments.username}",
+            "createdAt": "\${ctx.arguments.createdAt}",
           }
         }
       `),

@@ -12,10 +12,12 @@ export const handler: AppSyncResolverHandler<
   try {
     const params = {
       TableName,
+      IndexName: "receiptByUsername",
       KeyConditionExpression: "username = :u",
       ExpressionAttributeValues: {
         ":u": identity?.username,
       },
+      ScanIndexForward: false,
     };
 
     const { Items } = await db.query(params).promise();

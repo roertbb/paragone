@@ -15,6 +15,7 @@ const receiptsQuery = gql`
     receipts {
       id
       price
+      createdAt
     }
   }
 `;
@@ -29,6 +30,7 @@ const receiptsSubscription = gql`
       id
       price
       username
+      createdAt
     }
   }
 `;

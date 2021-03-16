@@ -1,44 +1,36 @@
 import { useHistory } from "react-router-dom";
-import { CognitoUser, AuthenticationDetails } from "amazon-cognito-identity-js";
+import { CognitoUser } from "amazon-cognito-identity-js";
 import { UserPool } from "../Auth";
 import Wrapper from "../components/Wrapper";
 import { Form, Formik } from "formik";
 import InputField from "../components/InputField";
 import { Box, Button, FormControl, FormErrorMessage } from "@chakra-ui/core";
 
-interface Props {
-  onLogin: () => void;
-}
-
-function Login({ onLogin }: Props) {
+function ConfirmEmail() {
   const history = useHistory();
 
   return (
-    <Wrapper size="small" flex>
+    <Wrapper size="small">
       <Formik
-        initialValues={{ username: "", password: "", error: "" }}
+        initialValues={{ username: "", code: "", error: "" }}
         onSubmit={async (values, { setErrors }) => {
-          const { username, password } = values;
+          const { username, code } = values;
 
-          const user = new CognitoUser({ Username: username, Pool: UserPool });
-          const authDetails = new AuthenticationDetails({
+          const userData = {
             Username: username,
-            Password: password,
-          });
+            Pool: UserPool,
+          };
 
-          user.authenticateUser(authDetails, {
-            onSuccess: (data) => {
-              console.log("success", { data });
+          const cognitoUser = new CognitoUser(userData);
 
-              onLogin();
-              history.push("/");
-            },
-            onFailure: (error) => {
-              console.log("failure", { error });
+          cognitoUser.confirmRegistration(code, true, (error, result) => {
+            if (error) {
+              console.error({ error });
               setErrors({ error: error.message });
-            },
-            newPasswordRequired: (data) =>
-              console.log("newPasswordRequired", { data }),
+            } else {
+              console.log({ result });
+              history.push("/login");
+            }
           });
         }}
       >
@@ -56,10 +48,9 @@ function Login({ onLogin }: Props) {
               </Box>
               <Box mb={4}>
                 <InputField
-                  name="password"
-                  placeholder="Password"
-                  label="Password"
-                  type="password"
+                  name="code"
+                  placeholder="Confirmation code"
+                  label="Confirmation code"
                 />
               </Box>
               {formError ? (
@@ -73,7 +64,7 @@ function Login({ onLogin }: Props) {
                 isLoading={isSubmitting}
                 variantColor="teal"
               >
-                Login
+                Confirm email
               </Button>
             </Form>
           );
@@ -83,4 +74,4 @@ function Login({ onLogin }: Props) {
   );
 }
 
-export default Login;
+export default ConfirmEmail;

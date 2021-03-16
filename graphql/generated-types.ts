@@ -9,13 +9,16 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  Long: any;
 };
+
 
 export type Receipt = {
   __typename?: 'Receipt';
   id: Scalars['String'];
   username: Scalars['String'];
   price?: Maybe<Scalars['Float']>;
+  createdAt: Scalars['Long'];
 };
 
 export type Query = {

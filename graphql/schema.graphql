@@ -1,7 +1,10 @@
+scalar Long
+
 type Receipt @aws_cognito_user_pools @aws_api_key {
   id: String!
   username: String!
   price: Float
+  createdAt: Long!
 }
 
 type Query {
