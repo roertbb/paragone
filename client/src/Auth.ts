@@ -3,7 +3,7 @@ import {
   CognitoUserAttribute,
   CognitoUserSession,
 } from "amazon-cognito-identity-js";
-import config from "../config";
+import config from "./config";
 
 const poolData = {
   UserPoolId: config.Auth.userPoolId!,
@@ -32,6 +32,10 @@ export function getUserSession() {
 
 export function getUsername() {
   return UserPool.getCurrentUser()?.getUsername();
+}
+
+export function logout() {
+  UserPool.getCurrentUser()?.signOut();
 }
 
 export { CognitoUserAttribute };

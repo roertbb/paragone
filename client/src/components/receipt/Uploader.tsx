@@ -1,11 +1,10 @@
-import { Button } from "@chakra-ui/core";
+import { Button, useToast } from "@chakra-ui/core";
 import React, { useRef, useState } from "react";
 import { gql, useQuery } from "@apollo/client";
-import * as t from "../../../graphql/generated-types";
-import { useHistory } from "react-router";
-import Wrapper from "./Wrapper";
-import Spinner from "../components/Spinner";
-import UnexpectedError from "../components/UnexpectedError";
+import * as t from "../../../../graphql/generated-types";
+import Wrapper from "../Wrapper";
+import Spinner from "../Spinner";
+import UnexpectedError from "../UnexpectedError";
 
 interface getUploadUrlData {
   getUploadUrl: t.Query["getUploadUrl"];
@@ -17,14 +16,18 @@ const getUploadUrlQuery = gql`
   }
 `;
 
-function ReceiptUploader() {
+interface Props {
+  onUploadSuccess: () => void;
+}
+
+const ReceiptUploader = ({ onUploadSuccess }: Props) => {
   const [file, setFile] = useState<File | undefined>(undefined);
   const [imagePreviewUrl, setImagePreviewUrl] = useState<
     string | ArrayBuffer | null
   >(null);
 
-  const history = useHistory();
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const toast = useToast();
 
   const { loading, error, data } = useQuery<getUploadUrlData>(
     getUploadUrlQuery
@@ -40,7 +43,15 @@ function ReceiptUploader() {
       .then((res) => {
         if (res.ok) {
           console.log("success");
-          history.push("/");
+          onUploadSuccess();
+          toast({
+            title: `Receipt successfully uploaded!`,
+            description:
+              "It will show up in the listing once processing is completed",
+            status: "success",
+            position: "bottom",
+            isClosable: true,
+          });
         }
       })
       .catch((error) => console.log({ error }));
@@ -64,7 +75,7 @@ function ReceiptUploader() {
   if (error) return <UnexpectedError />;
 
   return (
-    <Wrapper size="small" flex>
+    <Wrapper flex>
       <input
         type="file"
         onChange={handleChange}
@@ -96,6 +107,6 @@ function ReceiptUploader() {
       )}
     </Wrapper>
   );
-}
+};
 
 export default ReceiptUploader;

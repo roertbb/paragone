@@ -37,9 +37,9 @@ export class ParagoneStack extends cdk.Stack {
 
     const userPool = new cognito.UserPool(this, "paragoneUserPool", {
       selfSignUpEnabled: true,
-      accountRecovery: cognito.AccountRecovery.PHONE_AND_EMAIL,
+      accountRecovery: cognito.AccountRecovery.EMAIL_ONLY,
       userVerification: {
-        emailStyle: cognito.VerificationEmailStyle.CODE,
+        emailStyle: cognito.VerificationEmailStyle.LINK,
       },
       autoVerify: {
         email: true,

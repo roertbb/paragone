@@ -1,11 +1,12 @@
-import React from "react";
 import { Link, Box, Flex, Heading } from "@chakra-ui/core";
 import { Link as NavLink } from "react-router-dom";
-import { getUserSession } from "../auth/UserPool";
+import { getUserSession } from "../Auth";
 
-interface Props {}
+interface Props {
+  onLogout: () => void;
+}
 
-const Nav = (props: Props) => {
+const Nav = ({ onLogout }: Props) => {
   const currentUser = getUserSession();
 
   return (
@@ -23,9 +24,9 @@ const Nav = (props: Props) => {
         </NavLink>
         <Box ml={"auto"}>
           {currentUser ? (
-            <NavLink to="/login">
-              <Link mr={2}>Logout</Link>
-            </NavLink>
+            <Link mr={2} onClick={onLogout}>
+              Logout
+            </Link>
           ) : (
             <>
               <NavLink to="/login">

@@ -8,7 +8,7 @@ import {
 } from "@apollo/client";
 import { AUTH_TYPE, createAuthLink } from "aws-appsync-auth-link";
 import { createSubscriptionHandshakeLink } from "aws-appsync-subscription-link";
-import { getAccessToken } from "./auth/UserPool";
+import { getAccessToken } from "./Auth";
 import config from "./config";
 
 type AuthType = "AMAZON_COGNITO_USER_POOLS" | "OPENID_CONNECT";

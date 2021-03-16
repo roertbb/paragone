@@ -1,6 +1,6 @@
 import { useHistory } from "react-router-dom";
 import { CognitoUserAttribute } from "amazon-cognito-identity-js";
-import { UserPool } from "../auth/UserPool";
+import { UserPool } from "../Auth";
 import Wrapper from "../components/Wrapper";
 import { Form, Formik } from "formik";
 import InputField from "../components/InputField";
