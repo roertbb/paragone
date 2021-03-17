@@ -103,7 +103,7 @@ export class ParagoneStack extends cdk.Stack {
       value: api.apiKey || "",
     });
 
-    new cdk.CfnOutput(this, "bucketWebsiteUrl", {
+    new cdk.CfnOutput(this, "BucketWebsiteUrl", {
       value: receiptBucket.bucketWebsiteUrl,
     });
   }
