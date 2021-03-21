@@ -10,7 +10,7 @@ const receiptProcessedMutation = `
     $id: String!
     $username: String!
     $price: Float
-    $createdAt: Long
+    $createdAt: Long!
   ) {
     receiptProcessed(id: $id, username: $username, price: $price, createdAt: $createdAt) {
       id,
@@ -37,19 +37,15 @@ async function notifyReceiptProcessed({
     },
   };
 
-  console.log(JSON.stringify({ mutation, data }, null, 2));
-
   try {
-    const res = await fetch(GRAPHQL_URL, {
+    await fetch(GRAPHQL_URL, {
       method: "POST",
       body: JSON.stringify(mutation),
       headers: {
         "Content-Type": "application/json",
         "x-api-key": API_KEY,
       },
-    }).then((res: any) => res.json());
-
-    console.log(JSON.stringify({ res }, null, 2));
+    });
   } catch (error) {
     console.error(error, JSON.stringify(error));
   }

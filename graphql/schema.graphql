@@ -14,8 +14,12 @@ type Query {
 }
 
 type Mutation {
-  receiptProcessed(username: String!, id: String!, price: Float): Receipt
-    @aws_api_key
+  receiptProcessed(
+    username: String!
+    id: String!
+    price: Float
+    createdAt: Long!
+  ): Receipt @aws_api_key
 }
 
 type Subscription {

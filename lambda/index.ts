@@ -3,5 +3,4 @@ export { handler as sendTextractResultToDynamo } from "./sendTextractResultToDyn
 
 export { handler as getUploadUrlHandler } from "./getUploadUrl";
 export { handler as getDownloadUrlHandler } from "./getDownloadUrl";
-export { handler as getReceiptsHandler } from "./receipts";
 export { handler as receiptProcessedHandler } from "./receiptProcessed";

@@ -2,8 +2,8 @@ import * as cdk from "@aws-cdk/core";
 import * as s3 from "@aws-cdk/aws-s3";
 import * as cognito from "@aws-cdk/aws-cognito";
 import * as ddb from "@aws-cdk/aws-dynamodb";
-import { ReceiptProcessor } from "./receiptProcessor";
-import { ReceiptApi } from "./receiptApi";
+import { ReceiptProcessor } from "./backend/receiptProcessor";
+import { ReceiptApi } from "./backend/receiptApi";
 
 export class ParagoneStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {

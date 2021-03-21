@@ -52,11 +52,11 @@ const Receipts = (props: Props) => {
 
         return {
           receipts: [
+            newReceipt,
             ...(prev.receipts || []).filter(
               (receipt) =>
                 receipt?.id !== subscriptionData.data.onReceiptProcessed?.id
             ),
-            newReceipt,
           ],
         } as receiptsData;
       },

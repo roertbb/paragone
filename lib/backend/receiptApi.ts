@@ -83,19 +83,18 @@ export class ReceiptApi extends cdk.Construct {
       .createResolver({ typeName: "Query", fieldName: "getDownloadUrl" });
 
     // Query receipts
-    const getReceiptsHandler = new lambda.Function(this, "getReceiptsHandler", {
-      runtime: lambda.Runtime.NODEJS_12_X,
-      handler: `index.getReceiptsHandler`,
-      code: lambda.Code.fromAsset("lambda"),
-      environment: {
-        TABLE_NAME: receiptTable.tableName,
-      },
-    });
-
-    receiptTable.grant(getReceiptsHandler, "dynamodb:Query");
     this.api
-      .addLambdaDataSource("receiptsDataSource", getReceiptsHandler)
-      .createResolver({ typeName: "Query", fieldName: "receipts" });
+      .addDynamoDbDataSource("receiptsHandler", receiptTable)
+      .createResolver({
+        typeName: "Query",
+        fieldName: "receipts",
+        requestMappingTemplate: MappingTemplate.fromFile(
+          "lib/backend/mappingTemplates/receipts.request.vtl"
+        ),
+        responseMappingTemplate: MappingTemplate.fromFile(
+          "lib/backend/mappingTemplates/receipts.response.vtl"
+        ),
+      });
 
     // Mutation receiptProcessed
     const receiptProcessedHandler = new lambda.Function(
@@ -123,19 +122,11 @@ export class ReceiptApi extends cdk.Construct {
     this.api.addNoneDataSource("receiptProcessedDataSource").createResolver({
       typeName: "Mutation",
       fieldName: "receiptProcessed",
-      requestMappingTemplate: MappingTemplate.fromString(`
-        {
-          "version": "2017-02-28",
-          "payload": {
-            "id": "\${ctx.arguments.id}",
-            "price": "\${ctx.arguments.price}",
-            "username": "\${ctx.arguments.username}",
-            "createdAt": "\${ctx.arguments.createdAt}",
-          }
-        }
-      `),
-      responseMappingTemplate: MappingTemplate.fromString(
-        `\$util.toJson(\$ctx.result)`
+      requestMappingTemplate: MappingTemplate.fromFile(
+        "lib/backend/mappingTemplates/receiptProcessed.request.vtl"
+      ),
+      responseMappingTemplate: MappingTemplate.fromFile(
+        "lib/backend/mappingTemplates/receiptProcessed.response.vtl"
       ),
     });
 
@@ -143,22 +134,12 @@ export class ReceiptApi extends cdk.Construct {
     this.api.addNoneDataSource("onReceiptProcessedDataSource").createResolver({
       typeName: "Subscription",
       fieldName: "onReceiptProcessed",
-      requestMappingTemplate: MappingTemplate.fromString(`
-        {
-          "version": "2017-02-28",
-          "payload": {
-            "username": "\${ctx.arguments.username}",
-          }
-        }
-      `),
-      responseMappingTemplate: MappingTemplate.fromString(`
-        #if(\${context.identity.username} != \${context.arguments.username})
-            $utils.unauthorized()
-        #else
-        ##User is authorized, but we return null to continue
-            null
-        #end
-      `),
+      requestMappingTemplate: MappingTemplate.fromFile(
+        "lib/backend/mappingTemplates/onReceiptProcessed.request.vtl"
+      ),
+      responseMappingTemplate: MappingTemplate.fromFile(
+        "lib/backend/mappingTemplates/onReceiptProcessed.response.vtl"
+      ),
     });
   }
 }
