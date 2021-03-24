@@ -78,6 +78,8 @@ const ReceiptUploader = ({ onUploadSuccess }: Props) => {
     <Wrapper flex>
       <input
         type="file"
+        accept="image/*"
+        capture="environment"
         onChange={handleChange}
         ref={inputRef}
         style={{ display: "none" }}

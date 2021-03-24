@@ -9,13 +9,23 @@ const priceRegex = /\d+([.,]\d{1,2})?/g;
 const currency = "PLN";
 
 function extractPrice(data: Textract.GetDocumentAnalysisResponse) {
-  const lines = data.Blocks?.filter(({ BlockType }) => BlockType === "LINE");
-  const linesWithCurrency = lines?.filter(({ Text }) =>
-    Text?.includes(currency)
-  );
+  const lines =
+    data.Blocks?.filter(({ BlockType }) => BlockType === "LINE") || [];
+
+  const linesWithCurrency = [] as Textract.Block[];
+  for (let i = 0; i < lines?.length; i++) {
+    if (lines[i].Text?.includes(currency)) {
+      linesWithCurrency.push(lines[i]);
+      if (i + 1 < lines.length) {
+        linesWithCurrency.push(lines[i + 1]);
+      }
+    }
+  }
+
   const extractedPrices = linesWithCurrency
     ?.map(({ Text }) => Text?.match(priceRegex)?.[0])
-    .filter(Boolean);
+    .filter(Boolean)
+    .map((price) => price?.replace(",", "."));
 
   return extractedPrices?.[0];
 }

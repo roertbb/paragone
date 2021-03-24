@@ -16,6 +16,7 @@ export class ParagoneFrontendStack extends cdk.Stack {
     new s3Deployment.BucketDeployment(this, "paragoneWebsiteDeployment", {
       destinationBucket: websiteBucket,
       sources: [s3Deployment.Source.asset("./client/build")],
+      retainOnDelete: false,
     });
 
     const cf = new cloudfront.CloudFrontWebDistribution(
