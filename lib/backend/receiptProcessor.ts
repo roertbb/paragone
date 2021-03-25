@@ -24,10 +24,10 @@ export class ReceiptProcessor extends cdk.Construct {
 
     const snsReceiptProcessedTopic = new sns.Topic(
       this,
-      "ReceiptProcessedTopic"
+      "receiptProcessedTopic"
     );
 
-    const textractServiceRole = new iam.Role(this, "TextractServiceRole", {
+    const textractServiceRole = new iam.Role(this, "rextractServiceRole", {
       assumedBy: new iam.ServicePrincipal("textract.amazonaws.com"),
     });
 
@@ -43,7 +43,7 @@ export class ReceiptProcessor extends cdk.Construct {
       "sendReceiptToTextract",
       {
         code: lambda.Code.fromAsset("lambda"),
-        handler: "index.sendReceiptToTextract",
+        handler: "sendReceiptToTextract.handler",
         runtime: lambda.Runtime.NODEJS_12_X,
         environment: {
           S3_BUCKET_NAME: receiptBucket.bucketName,
@@ -77,7 +77,7 @@ export class ReceiptProcessor extends cdk.Construct {
       "sendTextractResultToDynamo",
       {
         code: lambda.Code.fromAsset("lambda"),
-        handler: "index.sendTextractResultToDynamo",
+        handler: "sendTextractResultToDynamo.handler",
         runtime: lambda.Runtime.NODEJS_12_X,
         environment: {
           SNS_TOPIC_ARN: snsReceiptProcessedTopic.topicArn,

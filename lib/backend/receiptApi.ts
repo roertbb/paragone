@@ -23,7 +23,7 @@ export class ReceiptApi extends cdk.Construct {
   ) {
     super(scope, id);
 
-    this.api = new appsync.GraphqlApi(this, "paragoneApp", {
+    this.api = new appsync.GraphqlApi(this, "paragoneApi", {
       name: "paragoneApi",
       logConfig: {
         fieldLogLevel: appsync.FieldLogLevel.ALL,
@@ -48,7 +48,7 @@ export class ReceiptApi extends cdk.Construct {
       "getUploadUrlHandler",
       {
         runtime: lambda.Runtime.NODEJS_12_X,
-        handler: `index.getUploadUrlHandler`,
+        handler: `getUploadUrl.handler`,
         code: lambda.Code.fromAsset("lambda"),
         environment: {
           BUCKET_NAME: receiptBucket.bucketName,
@@ -68,7 +68,7 @@ export class ReceiptApi extends cdk.Construct {
       "getDownloadUrlHandler",
       {
         runtime: lambda.Runtime.NODEJS_12_X,
-        handler: `index.getDownloadUrlHandler`,
+        handler: `getDownloadUrl.handler`,
         code: lambda.Code.fromAsset("lambda"),
         environment: {
           BUCKET_NAME: receiptBucket.bucketName,
@@ -102,7 +102,7 @@ export class ReceiptApi extends cdk.Construct {
       "receiptProcessedHandler",
       {
         runtime: lambda.Runtime.NODEJS_12_X,
-        handler: `index.receiptProcessedHandler`,
+        handler: `receiptProcessed.handler`,
         code: lambda.Code.fromAsset("lambda"),
         environment: {
           API_KEY: this.api.apiKey || "",
