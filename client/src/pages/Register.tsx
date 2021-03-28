@@ -28,7 +28,6 @@ function Register() {
               console.error({ error });
               setErrors({ error: error.message });
             } else {
-              console.log({ data });
               history.push("/confirm");
             }
           });

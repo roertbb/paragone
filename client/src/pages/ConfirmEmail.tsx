@@ -25,10 +25,8 @@ function ConfirmEmail() {
 
           cognitoUser.confirmRegistration(code, true, (error, result) => {
             if (error) {
-              console.error({ error });
               setErrors({ error: error.message });
             } else {
-              console.log({ result });
               history.push("/login");
             }
           });

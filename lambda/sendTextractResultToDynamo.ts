@@ -41,7 +41,7 @@ export const handler = async (event: SNSEvent) => {
     JobId = msg.JobId;
     filename = msg.DocumentLocation.S3ObjectName;
   } catch (error) {
-    console.log(error);
+    console.error({ error });
     return;
   }
 
@@ -68,6 +68,6 @@ export const handler = async (event: SNSEvent) => {
       })
       .promise();
   } catch (error) {
-    console.log({ error });
+    console.error({ error });
   }
 };

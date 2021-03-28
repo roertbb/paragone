@@ -42,7 +42,6 @@ const ReceiptUploader = ({ onUploadSuccess }: Props) => {
     })
       .then((res) => {
         if (res.ok) {
-          console.log("success");
           onUploadSuccess();
           toast({
             title: `Receipt successfully uploaded!`,
@@ -54,7 +53,7 @@ const ReceiptUploader = ({ onUploadSuccess }: Props) => {
           });
         }
       })
-      .catch((error) => console.log({ error }));
+      .catch((error) => console.error({ error }));
   }
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {

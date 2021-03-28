@@ -28,17 +28,14 @@ function Login({ onLogin }: Props) {
 
           user.authenticateUser(authDetails, {
             onSuccess: (data) => {
-              console.log("success", { data });
-
               onLogin();
               history.push("/");
             },
             onFailure: (error) => {
-              console.log("failure", { error });
               setErrors({ error: error.message });
             },
             newPasswordRequired: (data) =>
-              console.log("newPasswordRequired", { data }),
+              console.error("newPasswordRequired", { data }),
           });
         }}
       >

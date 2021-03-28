@@ -43,7 +43,6 @@ const Receipts = () => {
   );
 
   useEffect(() => {
-    console.log("subscribeToMore");
     subscribeToMore<onReceiptProcessedData>({
       document: receiptsSubscription,
       variables: { username: getUsername() },
