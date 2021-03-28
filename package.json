@@ -12,8 +12,8 @@
     "synth": "cdk synth --no-staging > template.yaml",
     "gen-types": "graphql-codegen",
     "build:frontend": "cd client && npm run build",
-    "deploy:backend": "npm run cdk deploy ParagoneStack -- --outputs-file ./client/src/config.json",
-    "deploy:frontend": "npm run cdk deploy ParagoneFrontendStack",
+    "deploy:backend": "npm run cdk deploy ParagoneStack -- --outputs-file ./client/src/config.json --require-approval=never",
+    "deploy:frontend": "npm run cdk deploy ParagoneFrontendStack -- --require-approval=never",
     "deploy": "npm run deploy:backend && npm run build:frontend && npm run deploy:frontend"
   },
   "devDependencies": {

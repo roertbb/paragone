@@ -16,6 +16,7 @@ const receiptsQuery = gql`
       id
       price
       createdAt
+      processedAt
     }
   }
 `;
@@ -31,33 +32,38 @@ const receiptsSubscription = gql`
       price
       username
       createdAt
+      processedAt
     }
   }
 `;
 
-interface Props {}
-
-const Receipts = (props: Props) => {
+const Receipts = () => {
   const { loading, error, data, subscribeToMore } = useQuery<receiptsData>(
     receiptsQuery
   );
 
   useEffect(() => {
+    console.log("subscribeToMore");
     subscribeToMore<onReceiptProcessedData>({
       document: receiptsSubscription,
       variables: { username: getUsername() },
       updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData.data) return prev;
+        const prevReceipts = prev.receipts || [];
         const newReceipt = subscriptionData.data.onReceiptProcessed;
+        const newReceiptIndex = prevReceipts.findIndex(
+          (receipt) => receipt?.id === newReceipt?.id
+        );
+
+        if (newReceiptIndex !== -1) {
+          const receipts = [...prevReceipts];
+          receipts[newReceiptIndex] = newReceipt as t.Receipt;
+
+          return { receipts } as receiptsData;
+        }
 
         return {
-          receipts: [
-            newReceipt,
-            ...(prev.receipts || []).filter(
-              (receipt) =>
-                receipt?.id !== subscriptionData.data.onReceiptProcessed?.id
-            ),
-          ],
+          receipts: [newReceipt, ...prevReceipts],
         } as receiptsData;
       },
     });

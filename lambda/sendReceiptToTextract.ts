@@ -31,6 +31,7 @@ export const handler = async (event: S3CreateEvent) => {
     id,
     username,
     createdAt: new Date().valueOf(),
+    processedAt: undefined,
   };
 
   try {

@@ -60,9 +60,10 @@ export const handler = async (event: SNSEvent) => {
           id,
           username,
         },
-        UpdateExpression: "set price = :p",
+        UpdateExpression: "set price = :p, processedAt = :t",
         ExpressionAttributeValues: {
-          ":p": price && Number(price),
+          ":p": price ? Number(price) : undefined,
+          ":t": new Date().valueOf(),
         },
       })
       .promise();

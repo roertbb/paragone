@@ -5,6 +5,7 @@ type Receipt @aws_cognito_user_pools @aws_api_key {
   username: String!
   price: Float
   createdAt: Long!
+  processedAt: Long
 }
 
 type Query {
@@ -19,6 +20,7 @@ type Mutation {
     id: String!
     price: Float
     createdAt: Long!
+    processedAt: Long
   ): Receipt @aws_api_key
 }
 

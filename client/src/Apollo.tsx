@@ -4,6 +4,7 @@ import {
   from,
   HttpLink,
   InMemoryCache,
+  NormalizedCacheObject,
   split,
 } from "@apollo/client";
 import { AUTH_TYPE, createAuthLink } from "aws-appsync-auth-link";
@@ -60,9 +61,13 @@ interface Props {
   children: React.ReactNode;
 }
 
+let client: ApolloClient<NormalizedCacheObject> | undefined;
+
 const Apollo = ({ children }: Props) => {
   const auth = getAuth();
-  const client = createClient(auth);
+  if (!client) {
+    client = createClient(auth);
+  }
 
   return <ApolloProvider client={client}>{children}</ApolloProvider>;
 };

@@ -19,6 +19,7 @@ export type Receipt = {
   username: Scalars['String'];
   price?: Maybe<Scalars['Float']>;
   createdAt: Scalars['Long'];
+  processedAt?: Maybe<Scalars['Long']>;
 };
 
 export type Query = {
@@ -44,6 +45,7 @@ export type MutationReceiptProcessedArgs = {
   id: Scalars['String'];
   price?: Maybe<Scalars['Float']>;
   createdAt: Scalars['Long'];
+  processedAt?: Maybe<Scalars['Long']>;
 };
 
 export type Subscription = {

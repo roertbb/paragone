@@ -1,5 +1,5 @@
-import { Box, Button, List, Text } from "@chakra-ui/core";
 import { useState } from "react";
+import { Box, Button, List, Text } from "@chakra-ui/core";
 import * as t from "../../../../graphql/generated-types";
 import Wrapper from "../Wrapper";
 import ReceiptDetails from "./Details";

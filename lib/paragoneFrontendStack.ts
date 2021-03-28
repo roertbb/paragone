@@ -13,13 +13,7 @@ export class ParagoneFrontendStack extends cdk.Stack {
       websiteIndexDocument: "index.html",
     });
 
-    new s3Deployment.BucketDeployment(this, "paragoneWebsiteDeployment", {
-      destinationBucket: websiteBucket,
-      sources: [s3Deployment.Source.asset("./client/build")],
-      retainOnDelete: false,
-    });
-
-    const cf = new cloudfront.CloudFrontWebDistribution(
+    const distribution = new cloudfront.CloudFrontWebDistribution(
       this,
       "paragoneWebsiteCloudfrontDistribution",
       {
@@ -34,12 +28,20 @@ export class ParagoneFrontendStack extends cdk.Stack {
       }
     );
 
+    new s3Deployment.BucketDeployment(this, "paragoneWebsiteDeployment", {
+      destinationBucket: websiteBucket,
+      sources: [s3Deployment.Source.asset("./client/build")],
+      retainOnDelete: false,
+      distribution,
+      distributionPaths: ["/*"],
+    });
+
     new cdk.CfnOutput(this, "BucketAddress", {
       value: websiteBucket.bucketWebsiteUrl,
     });
 
     new cdk.CfnOutput(this, "WebsiteAddress", {
-      value: cf.distributionDomainName,
+      value: distribution.distributionDomainName,
     });
   }
 }

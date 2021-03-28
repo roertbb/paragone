@@ -11,12 +11,14 @@ const receiptProcessedMutation = `
     $username: String!
     $price: Float
     $createdAt: Long!
+    $processedAt: Long
   ) {
-    receiptProcessed(id: $id, username: $username, price: $price, createdAt: $createdAt) {
-      id,
-      username,
-      price,
+    receiptProcessed(id: $id, username: $username, price: $price, createdAt: $createdAt, processedAt: $processedAt) {
+      id
+      username
+      price
       createdAt
+      processedAt
     }
   }
 `;
@@ -32,20 +34,27 @@ async function notifyReceiptProcessed({
     variables: {
       id: data?.id.S,
       username: data?.username.S,
-      price: Number(data?.price?.N),
+      price: data?.price?.N ? Number(data?.price?.N) : undefined,
       createdAt: Number(data?.createdAt?.N),
+      processedAt: data?.processedAt?.N
+        ? Number(data?.processedAt?.N)
+        : undefined,
     },
   };
 
+  console.log(JSON.stringify(mutation, null, 2));
+
   try {
-    await fetch(GRAPHQL_URL, {
+    const res = await fetch(GRAPHQL_URL, {
       method: "POST",
       body: JSON.stringify(mutation),
       headers: {
         "Content-Type": "application/json",
         "x-api-key": API_KEY,
       },
-    });
+    }).then((res) => res.json());
+
+    console.log(JSON.stringify(res, null, 2));
   } catch (error) {
     console.error(error, JSON.stringify(error));
   }

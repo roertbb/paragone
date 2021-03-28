@@ -1,4 +1,9 @@
-import { Box, ListItem as ChakraListItem, Text } from "@chakra-ui/core";
+import {
+  Box,
+  ListItem as ChakraListItem,
+  Spinner,
+  Text,
+} from "@chakra-ui/core";
 import * as t from "../../../../graphql/generated-types";
 
 interface Props {
@@ -7,11 +12,22 @@ interface Props {
 }
 
 const ListItem = ({ receipt, onReceiptSelected }: Props) => {
-  const { price, createdAt } = receipt;
+  const { price, createdAt, processedAt } = receipt;
 
   const date = new Date(createdAt);
   const day = date.toLocaleDateString();
   const time = date.toLocaleTimeString();
+
+  const renderPrice = () => {
+    if (!processedAt) return <Spinner color="teal.600" />;
+    else if (!price) return "-";
+    else
+      return (
+        <Text ml={4} color="teal.600">
+          PLN {price}
+        </Text>
+      );
+  };
 
   return (
     <ChakraListItem onClick={() => onReceiptSelected(receipt)}>
@@ -25,11 +41,7 @@ const ListItem = ({ receipt, onReceiptSelected }: Props) => {
         <Text isTruncated flex={1}>
           {day} - {time}
         </Text>
-        {price ? (
-          <Text ml={4} color="teal.600">
-            PLN {price}
-          </Text>
-        ) : undefined}
+        {renderPrice()}
       </Box>
     </ChakraListItem>
   );
