@@ -1,40 +1,30 @@
-import { Link, Box, Flex, Heading } from "@chakra-ui/core";
+import React, { useContext } from "react";
+import { Box, Flex, Heading, Link } from "@chakra-ui/react";
 import { Link as NavLink } from "react-router-dom";
-import { getUserSession } from "../Auth";
+import { UserContext } from "../Auth";
 
-interface Props {
-  onLogout: () => void;
-}
-
-const Nav = ({ onLogout }: Props) => {
-  const currentUser = getUserSession();
+const Nav = () => {
+  const { authenticated, logout } = useContext(UserContext);
 
   return (
-    <Flex
-      zIndex={1}
-      position="sticky"
-      top={0}
-      bg="teal.600"
-      color="white"
-      p={4}
-    >
+    <Flex bg="teal.600" color="white" p={4}>
       <Flex flex={1} m="auto" align="center" maxW={800}>
         <NavLink to="/">
           <Heading>Paragone</Heading>
         </NavLink>
         <Box ml={"auto"}>
-          {currentUser ? (
-            <Link mr={2} onClick={onLogout}>
+          {authenticated ? (
+            <Link mr={2} onClick={logout}>
               Logout
             </Link>
           ) : (
             <>
-              <NavLink to="/login">
-                <Link mr={2}>Login</Link>
-              </NavLink>
-              <NavLink to="/register">
-                <Link>Register</Link>
-              </NavLink>
+              <Link as={NavLink} to="/login" mr={2}>
+                Login
+              </Link>
+              <Link as={NavLink} to="/register">
+                Register
+              </Link>
             </>
           )}
         </Box>

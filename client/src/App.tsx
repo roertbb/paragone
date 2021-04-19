@@ -1,42 +1,38 @@
-import { useState } from "react";
-import { Switch, Route } from "react-router-dom";
+import React, { useContext } from "react";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { ChakraProvider, theme } from "@chakra-ui/react";
+import { UserContext, UserContextProvider } from "./Auth";
+import ApolloProvider from "./Apollo";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Apollo from "./Apollo";
-import { getUserSession, logout } from "./Auth";
-import Receipts from "./pages/Receipts";
 import Nav from "./components/Nav";
-import ConfirmEmail from "./pages/ConfirmEmail";
+import Wrapper from "./components/Wrapper";
+import Receipts from "./pages/Receipts";
 
-function App() {
-  const userSession = getUserSession();
-  const [isLoggedIn, setIsLoggedIn] = useState(!!userSession);
-
-  const onLogout = () => {
-    logout();
-    setIsLoggedIn(false);
-  };
+const Routes = () => {
+  const { authenticated } = useContext(UserContext);
 
   return (
-    <>
-      <Nav onLogout={onLogout} />
-      <Switch>
-        <Route path="/login">
-          <Login onLogin={() => setIsLoggedIn(true)} />
-        </Route>
-        <Route path="/register" component={Register} />
-        <Route path="/confirm" component={ConfirmEmail} />
-        {isLoggedIn && (
-          <Apollo>
-            <Route path="/" exact component={Receipts} />
-          </Apollo>
-        )}
-        <Route path="/">
-          <Login onLogin={() => setIsLoggedIn(true)} />
-        </Route>
-      </Switch>
-    </>
+    <Switch>
+      <Route path="/login" component={Login} />
+      <Route path="/register" component={Register} />
+      {authenticated && <Route path="/" exact component={Receipts} />}
+      <Route path="/" component={Login} />
+    </Switch>
   );
-}
+};
 
-export default App;
+export const App = () => (
+  <ChakraProvider theme={theme}>
+    <UserContextProvider>
+      <ApolloProvider>
+        <BrowserRouter>
+          <Nav />
+          <Wrapper>
+            <Routes />
+          </Wrapper>
+        </BrowserRouter>
+      </ApolloProvider>
+    </UserContextProvider>
+  </ChakraProvider>
+);

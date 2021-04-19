@@ -1,10 +1,10 @@
+import React from "react";
 import { ApolloProvider } from "@apollo/react-hooks";
 import {
   ApolloClient,
   from,
   HttpLink,
   InMemoryCache,
-  NormalizedCacheObject,
   split,
 } from "@apollo/client";
 import { AUTH_TYPE, createAuthLink } from "aws-appsync-auth-link";
@@ -13,13 +13,12 @@ import { getAccessToken } from "./Auth";
 import config from "./config";
 
 type AuthType = "AMAZON_COGNITO_USER_POOLS" | "OPENID_CONNECT";
-
 type AuthData = {
   url: string;
   region: string;
   auth: {
     type: AuthType;
-    jwtToken: string;
+    jwtToken: string | (() => string | Promise<string>);
   };
 };
 
@@ -32,7 +31,7 @@ const getAuth = () => ({
   region: config.aws_appsync_region!,
   auth: {
     type: AUTH_TYPE.AMAZON_COGNITO_USER_POOLS as AuthType,
-    jwtToken: getAccessToken(),
+    jwtToken: getAccessToken,
   },
 });
 
@@ -57,17 +56,20 @@ const createClient = (auth: AuthData) =>
     ]),
   });
 
-interface Props {
-  children: React.ReactNode;
-}
+// let client: ApolloClient<NormalizedCacheObject> | undefined;
 
-let client: ApolloClient<NormalizedCacheObject> | undefined;
+type Props = {
+  children: React.ReactNode;
+};
 
 const Apollo = ({ children }: Props) => {
   const auth = getAuth();
-  if (!client) {
-    client = createClient(auth);
-  }
+
+  //   if (!client) {
+  //     client = createClient(auth);
+  //   }
+
+  const client = createClient(auth);
 
   return <ApolloProvider client={client}>{children}</ApolloProvider>;
 };

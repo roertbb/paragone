@@ -1,43 +1,19 @@
-import { gql, useQuery } from "@apollo/client";
-import { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
+import { useQuery } from "@apollo/client";
 import * as t from "../../../graphql/generated-types";
-import { getUsername } from "../Auth";
+import { UserContext } from "../Auth";
+import {
+  onReceiptProcessedData,
+  receiptsData,
+  receiptsQuery,
+  receiptsSubscription,
+} from "../graphql/receipts";
 import Spinner from "../components/Spinner";
-import UnexpectedError from "../components/UnexpectedError";
+import Error from "../components/Error";
 import ReceiptList from "../components/receipt/List";
 
-interface receiptsData {
-  receipts: t.Query["receipts"];
-}
-
-const receiptsQuery = gql`
-  query {
-    receipts {
-      id
-      price
-      createdAt
-      processedAt
-    }
-  }
-`;
-
-interface onReceiptProcessedData {
-  onReceiptProcessed: t.Subscription["onReceiptProcessed"];
-}
-
-const receiptsSubscription = gql`
-  subscription onReceiptProcessed($username: String!) {
-    onReceiptProcessed(username: $username) {
-      id
-      price
-      username
-      createdAt
-      processedAt
-    }
-  }
-`;
-
 const Receipts = () => {
+  const { username } = useContext(UserContext);
   const { loading, error, data, subscribeToMore } = useQuery<receiptsData>(
     receiptsQuery
   );
@@ -45,7 +21,7 @@ const Receipts = () => {
   useEffect(() => {
     subscribeToMore<onReceiptProcessedData>({
       document: receiptsSubscription,
-      variables: { username: getUsername() },
+      variables: { username },
       updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData.data) return prev;
         const prevReceipts = prev.receipts || [];
@@ -54,6 +30,7 @@ const Receipts = () => {
           (receipt) => receipt?.id === newReceipt?.id
         );
 
+        // replace existing element if already in the list
         if (newReceiptIndex !== -1) {
           const receipts = [...prevReceipts];
           receipts[newReceiptIndex] = newReceipt as t.Receipt;
@@ -61,15 +38,16 @@ const Receipts = () => {
           return { receipts } as receiptsData;
         }
 
+        // append element at the end of the list
         return {
           receipts: [newReceipt, ...prevReceipts],
         } as receiptsData;
       },
     });
-  }, [subscribeToMore]);
+  }, [subscribeToMore, username]);
 
   if (loading) return <Spinner />;
-  if (error) return <UnexpectedError />;
+  if (error) return <Error error={error?.message} />;
 
   return <ReceiptList receipts={data?.receipts} />;
 };

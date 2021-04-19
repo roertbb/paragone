@@ -1,8 +1,8 @@
-import { Box, Spinner as ChakraSpinner } from "@chakra-ui/core";
+import React from "react";
+import { Box } from "@chakra-ui/layout";
+import { Spinner as ChakraSpinner, SpinnerProps } from "@chakra-ui/spinner";
 
-interface Props {}
-
-const Spinner = (props: Props) => {
+const Spinner = (props: SpinnerProps) => {
   return (
     <Box
       d="flex"
@@ -12,7 +12,7 @@ const Spinner = (props: Props) => {
       justifyContent="center"
       alignItems="center"
     >
-      <ChakraSpinner color="teal.600" size="xl" thickness="4px" />
+      <ChakraSpinner color="teal.600" size="xl" thickness="4px" {...props} />
     </Box>
   );
 };

@@ -1,79 +1,75 @@
-import { gql, useQuery } from "@apollo/client";
-import { Box, Button, Flex, Text } from "@chakra-ui/core";
-
+import React, { useState } from "react";
+import { useQuery } from "@apollo/client";
+import { Flex, Image, Text } from "@chakra-ui/react";
 import * as t from "../../../../graphql/generated-types";
+import {
+  getDownloadUrlData,
+  getDownloadUrlQuery,
+} from "../../graphql/receipts";
+import { timestampToDateTime } from "../../utils/time";
 import Spinner from "../Spinner";
-import UnexpectedError from "../UnexpectedError";
-import Wrapper from "../Wrapper";
-
-interface getDownloadUrlData {
-  getDownloadUrl: t.Query["getDownloadUrl"];
-}
-
-const getDownloadUrlQuery = gql`
-  query getDownloadUrlQuery($id: String!) {
-    getDownloadUrl(id: $id)
-  }
-`;
+import Error from "../Error";
+import Button from "../Button";
 
 interface Props {
   selectedReceipt: t.Receipt;
   onClose: () => void;
 }
 
-const Details = ({
+const ReceiptDetails = ({
   selectedReceipt: { id, price, createdAt },
   onClose,
 }: Props) => {
+  const [imageLoaded, setImageLoaded] = useState(false);
   const { loading, error, data } = useQuery<getDownloadUrlData>(
     getDownloadUrlQuery,
     { variables: { id } }
   );
 
   if (loading) return <Spinner />;
-  if (error) return <UnexpectedError />;
-
-  const date = new Date(createdAt);
-  const day = date.toLocaleDateString();
-  const time = date.toLocaleTimeString();
+  if (error) return <Error error={error.message} />;
 
   return (
-    <Wrapper flex>
-      <Box
+    <>
+      <Flex
+        direction="column"
         flex="1"
         mb={4}
-        borderWidth="1px"
         bg="gray.50"
+        borderWidth="1px"
         borderRadius="0.25rem"
       >
-        <Flex justifyContent="center" p={4}>
+        <Flex justifyContent="center" flex={1} p={4}>
+          {!imageLoaded && <Spinner />}
           {data?.getDownloadUrl && (
-            <img src={data?.getDownloadUrl} alt="receipt" />
+            <Image
+              display={imageLoaded ? "inline-block" : "none"}
+              src={data?.getDownloadUrl}
+              alt="receipt"
+              objectFit="contain"
+              onLoad={() => setImageLoaded(true)}
+            />
           )}
         </Flex>
         <Flex p={4} flexDirection="column">
           <Flex
-            flex={1}
             mb={2}
+            flex={1}
             alignItems="baseline"
             justifyContent="space-between"
           >
             <Text>Uploaded:</Text>
-            <Text>
-              {day} - {time}
-            </Text>
+            <Text>{timestampToDateTime(createdAt)}</Text>
           </Flex>
           <Flex flex={1} alignItems="baseline" justifyContent="space-between">
             <Text>Price:</Text>
             <Text color="teal.600">PLN {price}</Text>
           </Flex>
         </Flex>
-      </Box>
-      <Button variantColor="teal" onClick={onClose}>
-        Back
-      </Button>
-    </Wrapper>
+      </Flex>
+      <Button onClick={onClose}>Back</Button>
+    </>
   );
 };
 
-export default Details;
+export default ReceiptDetails;

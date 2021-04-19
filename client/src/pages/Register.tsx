@@ -1,53 +1,76 @@
-import { useHistory } from "react-router-dom";
-import { CognitoUserAttribute } from "amazon-cognito-identity-js";
-import { UserPool } from "../Auth";
-import Wrapper from "../components/Wrapper";
+import React from "react";
+import { useHistory } from "react-router";
 import { Form, Formik } from "formik";
-import InputField from "../components/InputField";
-import { Box, Button, FormControl, FormErrorMessage } from "@chakra-ui/core";
+import { Box } from "@chakra-ui/layout";
+import { confirmRegistration, register } from "../Auth";
+import InputField from "../components/form/InputField";
+import Button from "../components/Button";
+import FormError from "../components/form/FormError";
+
+type Step = "registration" | "confirmation";
+type RegisterFormValues = {
+  username: string;
+  email: string;
+  password: string;
+  code: string;
+  step: Step;
+  error: string;
+};
 
 function Register() {
   const history = useHistory();
 
+  const initialValues: RegisterFormValues = {
+    username: "",
+    email: "",
+    password: "",
+    code: "",
+    step: "registration",
+    error: "",
+  };
+
   return (
-    <Wrapper size="small">
-      <Formik
-        initialValues={{ username: "", email: "", password: "", error: "" }}
-        onSubmit={async (values, { setErrors }) => {
-          const { username, password, email } = values;
+    <Formik
+      initialValues={initialValues}
+      onSubmit={async (values, { setErrors, setFieldValue }) => {
+        const { username, password, email, code, step } = values;
 
-          const attributes = [
-            new CognitoUserAttribute({
-              Name: "email",
-              Value: email,
-            }),
-          ];
+        if (step === "registration") {
+          try {
+            await register({ username, password, email });
+            setFieldValue("step", "confirmation");
+          } catch (error) {
+            setErrors({ error });
+          }
+        } else if (step === "confirmation") {
+          try {
+            await confirmRegistration({ username, code });
+            history.push("/login");
+          } catch (error) {
+            setErrors({ error });
+          }
+        }
+      }}
+    >
+      {({ isSubmitting, errors, values }) => {
+        const formError = errors["error"];
+        const isRegistrationStep = values.step === "registration";
 
-          UserPool.signUp(username, password, attributes, [], (error, data) => {
-            if (error) {
-              console.error({ error });
-              setErrors({ error: error.message });
-            } else {
-              history.push("/confirm");
-            }
-          });
-        }}
-      >
-        {({ isSubmitting, errors }) => {
-          const formError = errors["error"];
-
-          return (
-            <Form>
-              <Box mb={4}>
-                <InputField
-                  name="username"
-                  placeholder="Username"
-                  label="Username"
-                />
-              </Box>
+        return (
+          <Form>
+            <Box mb={4}>
+              <InputField
+                name="username"
+                placeholder="Username"
+                label="Username"
+              />
+            </Box>
+            {isRegistrationStep && (
               <Box mb={4}>
                 <InputField name="email" placeholder="Email" label="Email" />
               </Box>
+            )}
+            {isRegistrationStep && (
               <Box mb={4}>
                 <InputField
                   name="password"
@@ -56,24 +79,24 @@ function Register() {
                   type="password"
                 />
               </Box>
-              {formError ? (
-                <FormControl mb={4} isInvalid={!!formError}>
-                  <FormErrorMessage>{formError}</FormErrorMessage>
-                </FormControl>
-              ) : null}
-              <Button
-                type="submit"
-                w="100%"
-                isLoading={isSubmitting}
-                variantColor="teal"
-              >
-                Register
-              </Button>
-            </Form>
-          );
-        }}
-      </Formik>
-    </Wrapper>
+            )}
+            {!isRegistrationStep && (
+              <Box mb={4}>
+                <InputField
+                  name="code"
+                  placeholder="Confirmation code"
+                  label="Confirmation code"
+                />
+              </Box>
+            )}
+            {formError && <FormError formError={formError} />}
+            <Button type="submit" isLoading={isSubmitting} w="100%">
+              Register
+            </Button>
+          </Form>
+        );
+      }}
+    </Formik>
   );
 }
 

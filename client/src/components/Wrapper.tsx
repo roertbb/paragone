@@ -1,23 +1,21 @@
 import React from "react";
-import { Box } from "@chakra-ui/core";
+import { Box } from "@chakra-ui/react";
 
 interface Props {
   children: React.ReactNode;
-  size?: "small" | "large";
-  flex?: Boolean;
 }
 
-const Wrapper = ({ children, size = "large", flex = false }: Props) => {
+const Wrapper = ({ children }: Props) => {
   return (
     <Box
-      my={8}
+      py={8}
       px={4}
       mx="auto"
-      maxW={size === "large" ? "800px" : "400px"}
+      maxW="640px"
       w="100%"
-      d={flex ? "flex" : undefined}
-      flex={flex ? 1 : undefined}
-      flexDirection={flex ? "column" : undefined}
+      flex={1}
+      d="flex"
+      flexDirection="column"
     >
       {children}
     </Box>

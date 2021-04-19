@@ -1,48 +1,32 @@
-import { Button, useToast } from "@chakra-ui/core";
-import React, { useRef, useState } from "react";
-import { gql, useQuery } from "@apollo/client";
-import * as t from "../../../../graphql/generated-types";
-import Wrapper from "../Wrapper";
+import { useQuery } from "@apollo/client";
+import { useToast } from "@chakra-ui/toast";
+import React from "react";
+import { getUploadUrlData, getUploadUrlQuery } from "../../graphql/receipts";
+import Button from "../Button";
+import Error from "../Error";
 import Spinner from "../Spinner";
-import UnexpectedError from "../UnexpectedError";
-
-interface getUploadUrlData {
-  getUploadUrl: t.Query["getUploadUrl"];
-}
-
-const getUploadUrlQuery = gql`
-  query {
-    getUploadUrl
-  }
-`;
 
 interface Props {
-  onUploadSuccess: () => void;
+  file?: File;
+  imagePreviewUrl?: string | ArrayBuffer | null;
+  onUpload: () => void;
 }
 
-const ReceiptUploader = ({ onUploadSuccess }: Props) => {
-  const [file, setFile] = useState<File | undefined>(undefined);
-  const [imagePreviewUrl, setImagePreviewUrl] = useState<
-    string | ArrayBuffer | null
-  >(null);
-
-  const inputRef = useRef<HTMLInputElement | null>(null);
+const ReceiptUploader = ({ file, imagePreviewUrl, onUpload }: Props) => {
   const toast = useToast();
 
   const { loading, error, data } = useQuery<getUploadUrlData>(
     getUploadUrlQuery
   );
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
+  function handleSubmit() {
     fetch(data?.getUploadUrl!, {
       method: "PUT",
       body: file,
     })
       .then((res) => {
         if (res.ok) {
-          onUploadSuccess();
+          onUpload();
           toast({
             title: `Receipt successfully uploaded!`,
             description:
@@ -56,57 +40,20 @@ const ReceiptUploader = ({ onUploadSuccess }: Props) => {
       .catch((error) => console.error({ error }));
   }
 
-  function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
-    event.preventDefault();
-
-    const reader = new FileReader();
-    const file = event?.target?.files?.[0];
-
-    reader.onloadend = () => {
-      setFile(file);
-      setImagePreviewUrl(reader.result);
-    };
-
-    reader.readAsDataURL(file!);
-  }
-
   if (loading) return <Spinner />;
-  if (error) return <UnexpectedError />;
+  if (error) return <Error error={error.message} />;
 
   return (
-    <Wrapper flex>
-      <input
-        type="file"
-        accept="image/*"
-        capture="environment"
-        onChange={handleChange}
-        ref={inputRef}
-        style={{ display: "none" }}
-      ></input>
-      <Button
-        onClick={() => inputRef?.current?.click()}
-        variantColor="teal"
-        mb={8}
-        w="100%"
-      >
-        Select receipt to upload
-      </Button>
-
+    <>
       {imagePreviewUrl && (
         <>
           <img src={imagePreviewUrl.toString()} alt="receipt" />
-          <Button
-            type="submit"
-            variantColor="teal"
-            w="100%"
-            mt={8}
-            onClick={handleSubmit}
-          >
+          <Button type="submit" w="100%" mt={8} onClick={handleSubmit}>
             Upload receipt
           </Button>
         </>
       )}
-    </Wrapper>
+    </>
   );
 };
 
