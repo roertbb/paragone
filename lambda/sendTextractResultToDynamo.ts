@@ -45,10 +45,10 @@ export const handler = async (event: SNSEvent) => {
     return;
   }
 
-  const params: Textract.GetDocumentAnalysisRequest = { JobId };
+  const params: Textract.GetDocumentTextDetectionRequest = { JobId };
 
   try {
-    const data = await textract.getDocumentAnalysis(params).promise();
+    const data = await textract.getDocumentTextDetection(params).promise();
 
     const price = extractPrice(data);
     const [username, id] = filename.split("/");

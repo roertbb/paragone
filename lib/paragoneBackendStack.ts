@@ -99,10 +99,6 @@ export class ParagoneStack extends cdk.Stack {
       value: api.graphqlUrl,
     });
 
-    new cdk.CfnOutput(this, "GraphQLAPIKey", {
-      value: api.apiKey || "",
-    });
-
     new cdk.CfnOutput(this, "BucketWebsiteUrl", {
       value: receiptBucket.bucketWebsiteUrl,
     });

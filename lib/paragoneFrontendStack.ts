@@ -36,10 +36,6 @@ export class ParagoneFrontendStack extends cdk.Stack {
       distributionPaths: ["/*"],
     });
 
-    new cdk.CfnOutput(this, "BucketAddress", {
-      value: websiteBucket.bucketWebsiteUrl,
-    });
-
     new cdk.CfnOutput(this, "WebsiteAddress", {
       value: distribution.distributionDomainName,
     });

@@ -11,9 +11,14 @@
     "cdk": "cdk",
     "synth": "cdk synth --no-staging > template.yaml",
     "gen-types": "graphql-codegen",
+    "deps:frontend": "cd client && npm ci",
     "build:frontend": "cd client && npm run build",
-    "deploy:backend": "npm run cdk deploy ParagoneStack -- --outputs-file ./client/src/config.json --require-approval=never",
     "deploy:frontend": "npm run cdk deploy ParagoneFrontendStack -- --require-approval=never",
+    "bootstrap:frontend": "npm run cdk bootstrap ParagoneFrontendStack -- --require-approval=never",
+    "deps:backend": "npm ci && cd lambda && npm ci",
+    "build:backend": "npm run build",
+    "deploy:backend": "npm run cdk deploy ParagoneStack -- --outputs-file ./client/src/config.json --require-approval=never",
+    "bootstrap:backend": "npm run cdk bootstrap ParagoneStack -- --require-approval=never",
     "deploy": "npm run deploy:backend && npm run build:frontend && npm run deploy:frontend"
   },
   "devDependencies": {

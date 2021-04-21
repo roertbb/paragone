@@ -13,14 +13,13 @@ export const handler = async (event: S3CreateEvent) => {
   const filename = event.Records[0].s3.object.key;
   const [username, id] = filename.split("/");
 
-  const params: Textract.StartDocumentAnalysisRequest = {
+  const params: Textract.StartDocumentTextDetectionRequest = {
     DocumentLocation: {
       S3Object: {
         Bucket: S3_BUCKET_NAME,
         Name: filename,
       },
     },
-    FeatureTypes: ["FORMS"],
     NotificationChannel: {
       RoleArn: SNS_ROLE_ARN,
       SNSTopicArn: SNS_TOPIC_ARN,
@@ -37,7 +36,7 @@ export const handler = async (event: S3CreateEvent) => {
   try {
     await Promise.all([
       db.put({ TableName, Item }).promise(),
-      textract.startDocumentAnalysis(params).promise(),
+      textract.startDocumentTextDetection(params).promise(),
     ]);
   } catch (error) {
     console.error({ error });
